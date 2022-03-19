@@ -150,9 +150,9 @@ void OLED_Init(void)
 	a[2]=0x00;
 	a[2]='\0';
 	Send_Str(0x00,a);
-	OLED_SetPos(0, 7);
 	OLED_ON();
 	OLED_Up(0);
+	OLED_SetPos(0, 7);
 	OLED_Fill(0x00);
 }
 
@@ -165,19 +165,23 @@ void OLED_Str(unsigned char x, unsigned char y, unsigned char ch[], unsigned cha
 
 void OLED_PRINT( char ch[]){
 	(unsigned char)ch;
-	static int line=0;
-	unsigned char c = 0,i = 0,j = 0,h=0;
+	static int line=7;
+	int length=0;
+	unsigned char c = 0,i = 0,j = 0;
 	
 	while(ch[j] != '\0'){		
-		if(ch[j]=='\r'){
-			line=(line+7)%8;
-			OLED_Up(line*8);
+		if(length>120){
+			length=0;
+			line=(line+1)%8;
+			OLED_Up(line*8-1);
+			OLED_SetPos(0,line%8);
+			
 		}
 		c = ch[j] - 32;		
 		for(i=0;i<6;i++)
 			SEND_BYTE(0X40,F6x8[c][i]);
 			j++;
-			h++;
+			length+=6;
 		}
 	line=(line+1)%8;
 	OLED_Up(line*8-1);
