@@ -4,43 +4,41 @@
 #include "bsp_tim.h"
 #include "bsp_oled.h"
 #include "bsp_systick.h"
-#include <stdio.h>
 #include "bsp_esp8266.h"
+#include "bsp_gy86.h"
+#include <stdio.h>
+#include "bsp_ppm.h"
 
-
-unsigned char a[100];
 int m=0;
 int time=0;
 
-	int main(){
-	char m[]={0x59};
-	TIM4_Init();
-	LED_CONFIG();
-	USART1_CONFIG();
-	USART6_CONFIG();
-	I2C_CONFIG();	
-	LED_ON();
-	OLED_Init();
+int main(){
 
-	OLED_PRINT("1");
-	OLED_PRINT("2");
-	OLED_PRINT("3");
-	OLED_PRINT("4");
-	OLED_PRINT("5");
-	OLED_PRINT("I love you");
-	OLED_PRINT("7");
-	OLED_PRINT("8");
-	OLED_PRINT("9");
-	OLED_PRINT("10");
-	OLED_PRINT("11");
-	OLED_PRINT("12");
-	OLED_PRINT("12");
-	LED_SHINING(1000);
+	LED_CONFIG();
+	USART6_CONFIG();
+	I2C1_CONFIG();	
+	I2C_DeInit(I2C3);
+	I2C3_CONFIG();
+	TIM1_CONFIG();
+	TIM3_CONFIG();
+	OLED_Init();
+	Fly_Start();
+	LED_ON();
+	while(1){
+		Show_PPM();
+		CH1_Change(TIM1_DataBuf[0]);
+		CH2_Change(TIM1_DataBuf[1]);
+		CH3_Change(TIM1_DataBuf[2]);
+		CH4_Change(TIM1_DataBuf[3]);
+		
+	}
+
 }
 
 
 
 
 
+    
 
-
+  

@@ -10,7 +10,7 @@ char g[50]={'0'};
 char h[50]={'0'};
 char i[50]={'0'};
 
-TIM_OCInitTypeDef C1,C2,C3,C4;
+
 
 
 /*
@@ -33,7 +33,7 @@ void TIM1_CC_IRQHandler(void){
 				num=TIM_GetCapture2(TIM1);
 				in_num=0;
 		}
-		if(num>100){
+		if(num>1000){
 			status=1;
 		}
 	}else{
@@ -61,7 +61,6 @@ void Show_PPM(void){
 	sprintf(f,"the 6 is %d",TIM1_DataBuf[5]);
 	sprintf(g,"the 7 is %d",TIM1_DataBuf[6]);
 	sprintf(h,"the 8 is %d",TIM1_DataBuf[7]);
-	sprintf(i,"the 9 is %d",TIM1_DataBuf[8]);
 	OLED_ShowStr(0,0,a);
 	OLED_ShowStr(0,1,b);
 	OLED_ShowStr(0,2,c);
@@ -69,35 +68,51 @@ void Show_PPM(void){
 	OLED_ShowStr(0,4,e);
 	OLED_ShowStr(0,5,f);
 	OLED_ShowStr(0,6,g);
-	OLED_ShowStr(0,7,h);
+	OLED_ShowStr(0,7,h);//
 }
 
+/**
+	打到底是200， 达到最高是400 ，但是由于会有偏差 所以准备在202的时候就是达到最低就允许运行，在398的时候就是最大
+*/
 
+void Fly_Start(void){
+	while(TIM1_DataBuf[0]>205||TIM1_DataBuf[1]>205||TIM1_DataBuf[2]>205||TIM1_DataBuf[3]<395){
+	}
+	CH1_Change(220);
+	CH2_Change(220);
+	CH3_Change(220);
+	CH4_Change(220);
+}
 
 
 /*
-	需要修改输出的PWM的值 函数
+	需要修改输出的PWM的值 了解到 如果要修改占空比 只需要修改Compare的值
+	这就是在配置占空比  一般是10~20% 的占空比 
+	所以这就是 会产生函数，  可以接受的Compare的值是 20000/10=2000 20000/5=4000
+	所以值域是[2000,4000]
+	自变量的定义域是[200,400]; 
+	为了保护机身的安全 是否采用线性的映射函数
 */
 
-void CH1_Change(){
-	
-	
+int  ChangeToPWM(int num){
+	return 10*num;
+}
+
+void CH1_Change(int Compare){
+	TIM_SetCompare1(TIM3,ChangeToPWM(Compare));
 }
 
 
-void CH2_Change(){
-	
-	
+void CH2_Change(int Compare){
+		TIM_SetCompare2(TIM3,ChangeToPWM(Compare));
 }
 
-void CH3_Change(){
-	
-	
+void CH3_Change(int Compare){
+	TIM_SetCompare3(TIM3,ChangeToPWM(Compare));
 }
 
-void CH4_Change(){
-	
-	
+void CH4_Change(int Compare){
+	TIM_SetCompare4(TIM3,ChangeToPWM(Compare));
 }
 
 
