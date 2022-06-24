@@ -2,6 +2,7 @@
 #define _BSP_OLED_H
 #include "bsp_i2c.h"
 #include "bsp_tim.h"
+#include <stdio.h>
 
 #define OLED_ADDR 0x78
 #define OLED_I2C  I2C1
@@ -26,7 +27,7 @@ void OLED_ON(void);
 void OLED_Init(void);
 void OLED_CLS(void);void OLED_Str(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize);
 void SEND_BYTE(uint8_t addr,uint8_t data);
-void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[]);
+void OLED_ShowStr(unsigned char x, unsigned char y,  char ch[]);
 void OLED_Scroll(int START,int END,int DIRECT); //∆¡ƒªœÚ…œ“∆∂Ø
 void OLED_Up(uint8_t up);
 void OLED_PRINT(  char ch[]);

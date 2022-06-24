@@ -8,37 +8,29 @@
 #include "bsp_gy86.h"
 #include <stdio.h>
 #include "bsp_ppm.h"
-
+#include "bsp_ray.h"
 int m=0;
 int time=0;
 
-int main(){
 
+int main(){
+	TIM1_CONFIG(); 
+	TIM3_CONFIG();
 	LED_CONFIG();
+	//USART1_CONFIG();
+	//由于中断所以卡死了
 	USART6_CONFIG();
 	I2C1_CONFIG();	
 	I2C_DeInit(I2C3);
 	I2C3_CONFIG();
-	TIM1_CONFIG();
-	TIM3_CONFIG();
-	OLED_Init();
-	Fly_Start();
 	LED_ON();
+	OLED_Init();
+	LED_OFF();
+	//Fly_Start();
 	while(1){
 		Show_PPM();
-		CH1_Change(TIM1_DataBuf[0]);
-		CH2_Change(TIM1_DataBuf[1]);
-		CH3_Change(TIM1_DataBuf[2]);
-		CH4_Change(TIM1_DataBuf[3]);
-		
 	}
-
+	LED_OFF();
 }
 
 
-
-
-
-    
-
-  

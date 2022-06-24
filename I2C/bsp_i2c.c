@@ -1,38 +1,63 @@
 #include "bsp_i2c.h"
+#include <stdio.h>
 
-
-void I2C_CONFIG(void){
+void I2C1_CONFIG(void){
 	I2C_InitTypeDef I2C;
 	GPIO_InitTypeDef GPIO;
-	//开启i2c时钟
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1,ENABLE);
-	//开启I2C GPIO 时钟
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE);
-	//配置 gpio 的复用
 	GPIO_PinAFConfig(GPIOB,GPIO_PinSource6,GPIO_AF_I2C1);
 	GPIO_PinAFConfig(GPIOB,GPIO_PinSource7,GPIO_AF_I2C1);
 	GPIO.GPIO_Mode=GPIO_Mode_AF;
 	GPIO.GPIO_OType=GPIO_OType_OD;
 	GPIO.GPIO_Pin=I2C1_SCL_Pin;
 	GPIO.GPIO_PuPd=GPIO_PuPd_UP;
-	GPIO.GPIO_Speed=GPIO_Speed_50MHz;
-	//初始化GPIO
+	GPIO.GPIO_Speed=GPIO_Speed_100MHz;
 	GPIO_Init(GPIOB,&GPIO);
 	GPIO.GPIO_Pin=I2C1_SDA_Pin;
 	GPIO_Init(GPIOB,&GPIO);
+
 	
-	//配置i2c 外设
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1,ENABLE);
 	I2C.I2C_Ack=I2C_Ack_Enable;
 	I2C.I2C_AcknowledgedAddress=I2C_AcknowledgedAddress_7bit;
 	I2C.I2C_ClockSpeed=I2C_SPEED;
 	I2C.I2C_DutyCycle=I2C_DutyCycle_2;
 	I2C.I2C_Mode=I2C_Mode_I2C;
-	I2C.I2C_OwnAddress1= I2C_OWN_ADDR;
+	I2C.I2C_OwnAddress1= I2C_OWN_ADDR1;
 	I2C_Init(I2C1,&I2C);
-	
-	//使能函数
 	I2C_Cmd(I2C1,ENABLE);
 }
+
+
+void I2C3_CONFIG(void){
+	I2C_InitTypeDef I2C;
+	GPIO_InitTypeDef GPIO;
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
+	GPIO_PinAFConfig(GPIOC,GPIO_PinSource9,GPIO_AF_I2C3);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource8,GPIO_AF_I2C3);
+	GPIO.GPIO_Mode=GPIO_Mode_AF;
+	GPIO.GPIO_OType=GPIO_OType_OD;
+	GPIO.GPIO_Pin=I2C3_SCL_Pin;
+	GPIO.GPIO_PuPd=GPIO_PuPd_UP;
+	GPIO.GPIO_Speed=GPIO_Speed_100MHz;
+	GPIO_Init(GPIOA,&GPIO);
+	GPIO.GPIO_Pin=I2C3_SDA_Pin;
+	GPIO_Init(GPIOC,&GPIO);
+	I2C3->CR1|=(1<<15);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C3,ENABLE);
+	I2C.I2C_Ack=I2C_Ack_Enable;
+	I2C.I2C_AcknowledgedAddress=I2C_AcknowledgedAddress_7bit;
+	I2C.I2C_ClockSpeed=I2C_SPEED;
+	I2C.I2C_DutyCycle=I2C_DutyCycle_2;
+	I2C.I2C_Mode=I2C_Mode_I2C;
+	I2C.I2C_OwnAddress1= I2C_OWN_ADDR2;
+	I2C_Init(I2C3,&I2C);
+	I2C_Cmd(I2C3,ENABLE);
+}
+
+
+
 
 //I2C Address Detective
 void I2C_Addr_Detect(void){

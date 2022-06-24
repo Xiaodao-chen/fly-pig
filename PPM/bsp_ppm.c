@@ -9,7 +9,7 @@ char f[50]={'0'};
 char g[50]={'0'};
 char h[50]={'0'};
 char i[50]={'0'};
-
+int T1=0,T2=0,T3=0,T4=0;
 
 
 
@@ -52,23 +52,25 @@ void TIM1_CC_IRQHandler(void){
 	}
 }
 
+
+
 void Show_PPM(void){
-	sprintf(a,"the 1 is %d",TIM1_DataBuf[0]);
+	sprintf(a,"the 1 is %d",TIM1_DataBuf[0]);  
 	sprintf(b,"the 2 is %d",TIM1_DataBuf[1]);
 	sprintf(c,"the 3 is %d",TIM1_DataBuf[2]);
 	sprintf(d,"the 4 is %d",TIM1_DataBuf[3]);
-	sprintf(e,"the 5 is %d",TIM1_DataBuf[4]);
-	sprintf(f,"the 6 is %d",TIM1_DataBuf[5]);
-	sprintf(g,"the 7 is %d",TIM1_DataBuf[6]);
-	sprintf(h,"the 8 is %d",TIM1_DataBuf[7]);
-	OLED_ShowStr(0,0,a);
-	OLED_ShowStr(0,1,b);
-	OLED_ShowStr(0,2,c);
-	OLED_ShowStr(0,3,d);
-	OLED_ShowStr(0,4,e);
-	OLED_ShowStr(0,5,f);
-	OLED_ShowStr(0,6,g);
-	OLED_ShowStr(0,7,h);//
+//	sprintf(e,"the 5 is %d",TIM1_DataBuf[4]);
+//	sprintf(f,"the 6 is %d",TIM1_DataBuf[5]);
+//	sprintf(g,"the 7 is %d",TIM1_DataBuf[6]);
+//	sprintf(h,"the 8 is %d",TIM1_DataBuf[7]);
+	OLED_ShowStr(0,7,a);
+	OLED_ShowStr(0,0,b);
+	OLED_ShowStr(0,1,c);
+	OLED_ShowStr(0,2,d);
+//	OLED_ShowStr(0,3,e);
+//	OLED_ShowStr(0,4,f);
+//	OLED_ShowStr(0,5,g);
+//	OLED_ShowStr(0,6,h);
 }
 
 /**
@@ -78,10 +80,6 @@ void Show_PPM(void){
 void Fly_Start(void){
 	while(TIM1_DataBuf[0]>205||TIM1_DataBuf[1]>205||TIM1_DataBuf[2]>205||TIM1_DataBuf[3]<395){
 	}
-	CH1_Change(220);
-	CH2_Change(220);
-	CH3_Change(220);
-	CH4_Change(220);
 }
 
 
@@ -94,8 +92,37 @@ void Fly_Start(void){
 	为了保护机身的安全 是否采用线性的映射函数
 */
 
+/*
+header 
+		|
+		|
+CH1   CH3
+	\___/
+	/		\
+CH2   CH4
+
+buf[0] 是左右方向
+buf[1] 是前后方向
+buf[2] 是油门方向
+buf[3] 是左旋转和右旋转方向
+
+*/
+void ChangeMotor(void){
+
+		// 左右方向          前后方向                油门大小             旋转方向  
+	T1=TIM1_DataBuf[0]-300+300-TIM1_DataBuf[1]+TIM1_DataBuf[2]+TIM1_DataBuf[3]-300;
+	T2=TIM1_DataBuf[0]-300+TIM1_DataBuf[1]-300+TIM1_DataBuf[2]+300-TIM1_DataBuf[3];
+	T3=300-TIM1_DataBuf[0]+300-TIM1_DataBuf[1]+TIM1_DataBuf[2]+300-TIM1_DataBuf[3];
+	T4=300-TIM1_DataBuf[0]+TIM1_DataBuf[1]-300+TIM1_DataBuf[2]+TIM1_DataBuf[3]-300;
+	TIM_SetCompare1(TIM3,ChangeToPWM(T1));
+	TIM_SetCompare2(TIM3,ChangeToPWM(T2));
+	TIM_SetCompare3(TIM3,ChangeToPWM(T3));
+	TIM_SetCompare4(TIM3,ChangeToPWM(T4));
+}
+
+
 int  ChangeToPWM(int num){
-	return 10*num;
+	return 5*num;
 }
 
 void CH1_Change(int Compare){
@@ -115,5 +142,19 @@ void CH4_Change(int Compare){
 	TIM_SetCompare4(TIM3,ChangeToPWM(Compare));
 }
 
+
+void PPM_Init(void){
+	TIM_SetCompare1(TIM3,2000);
+	TIM_SetCompare2(TIM3,2000);
+	TIM_SetCompare3(TIM3,2000);
+	TIM_SetCompare4(TIM3,2000);
+	Systick_Delay_ms(4000);
+	TIM_SetCompare1(TIM3,1000);
+	TIM_SetCompare2(TIM3,1000);
+	TIM_SetCompare3(TIM3,1000);
+	TIM_SetCompare4(TIM3,1000);
+	
+	
+}
 
 

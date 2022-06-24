@@ -40,3 +40,7 @@
 .\objects\bsp_i2c.o: .\f401\CMSIS\stm32f4xx.h
 .\objects\bsp_i2c.o: .\f401\FWLIB\misc.h
 .\objects\bsp_i2c.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_i2c.o: .\SYSTICK\bsp_systick.h
+.\objects\bsp_i2c.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_i2c.o: .\f401\CMSIS\core_cm4.h
+.\objects\bsp_i2c.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h

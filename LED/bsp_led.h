@@ -8,6 +8,6 @@
 void LED_CONFIG(void);
 void LED_OFF(void);
 void LED_ON(void);
-void LED_SHINING(int ti);
+void LED_SHINING(void);
 #endif
 

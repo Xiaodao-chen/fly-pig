@@ -40,3 +40,10 @@
 .\objects\bsp_tim.o: .\f401\CMSIS\stm32f4xx.h
 .\objects\bsp_tim.o: .\f401\FWLIB\misc.h
 .\objects\bsp_tim.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_tim.o: .\OLED\bsp_oled.h
+.\objects\bsp_tim.o: .\I2C\bsp_i2c.h
+.\objects\bsp_tim.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_tim.o: .\SYSTICK\bsp_systick.h
+.\objects\bsp_tim.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_tim.o: .\f401\CMSIS\core_cm4.h
+.\objects\bsp_tim.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h

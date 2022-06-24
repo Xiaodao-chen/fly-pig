@@ -53,3 +53,9 @@
 .\objects\main.o: .\f401\CMSIS\stm32f4xx.h
 .\objects\main.o: .\f401\CMSIS\core_cm4.h
 .\objects\main.o: .\ESP8266\bsp_esp8266.h
+.\objects\main.o: .\GY86\bsp_gy86.h
+.\objects\main.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\main.o: .\PPM\bsp_ppm.h
+.\objects\main.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\main.o: .\Ray\bsp_ray.h
+.\objects\main.o: .\f401\CMSIS\stm32f4xx.h

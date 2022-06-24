@@ -44,3 +44,13 @@
 .\objects\bsp_esp8266.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\bsp_esp8266.o: .\LED\bsp_led.h
 .\objects\bsp_esp8266.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_esp8266.o: C:\ES\ARM\ARMCC\Bin\..\include\string.h
+.\objects\bsp_esp8266.o: C:\ES\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\bsp_esp8266.o: .\OLED\bsp_oled.h
+.\objects\bsp_esp8266.o: .\I2C\bsp_i2c.h
+.\objects\bsp_esp8266.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_esp8266.o: .\SYSTICK\bsp_systick.h
+.\objects\bsp_esp8266.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_esp8266.o: .\f401\CMSIS\core_cm4.h
+.\objects\bsp_esp8266.o: .\TIM\bsp_tim.h
+.\objects\bsp_esp8266.o: .\f401\CMSIS\stm32f4xx.h

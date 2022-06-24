@@ -10,25 +10,24 @@
 #define USART1_TX  GPIO_Pin_9
 #define USART1_RX  GPIO_Pin_10
 
-//串口6 的配置
-#define USART6_TX  GPIO_Pin_11
-#define USART6_RX  GPIO_Pin_12
-
-
-
-
+//串口6 的配置 配置的PC6 USART_TX 
+//PC7 USART_RX
+#define USART6_TX  GPIO_Pin_6
+#define USART6_RX  GPIO_Pin_7
 
 
 
 void Usart_SendByte(USART_TypeDef* USARTX,uint8_t data);
 void USART1_CONFIG(void);
-void USART2_CONFIG(void);
 void NVIC_CONFIG(void);
 void Usart_SendStr(USART_TypeDef* USARTX,char* ch);
-void NVIC_CONFIG(void);
+void NVIC_usart6_open(void);
+void NVIC_usart6_close(void);
 void Debug_USART_Config(void);
-
 void USART6_CONFIG(void);
+void I2C_Addr_Detect(void);
 #endif
+
+
 
 

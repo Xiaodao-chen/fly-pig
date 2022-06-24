@@ -1,9 +1,10 @@
    #include "bsp_tim.h"
 	 #include "bsp_oled.h"
 	 
-
-TIM_OCInitTypeDef CH1,CH2,CH3,CH4;
-
+/*
+	extern Ö»ÊÇÔÚ,h ÎÄ¼şÖĞÉùÃ÷µÄ£¬·ÃÎÊµÄ¶¼ÊÇÍ¬Ò»¸ö¶«Î÷
+*/
+TIM_OCInitTypeDef CH1,CH2,CH3,CH4; //ÕâÊÇ¶¨Òå
 /*
 stm32 ¶¨Ê±Æ÷¶¨Ê±¼ÆËãÍ¨¹ı¼ÆÊı Òç³ö¼ÆËã£¬Ò²¾ÍÊÇËµ¼ÆÊıÒç³ö´¥·¢ÖĞ¶Ï  ¼ÆÊıÆ÷ÊÇÓÃÓÚ¼ÆËãÊı×Ö£¬¼´Ã¿¸öÊ±ÖÓÖÜÆÚ¶¼¼Ó1 µ«ÊÇARRÊÇÓÃÓÚÉèÖÃÔÚ¶àÉÙ
 ½øĞĞ¼ÆÊıÆ÷ÊÇ¶à´óµÄÊ±ºò½øĞĞÖØ×°ÔØ
@@ -25,14 +26,13 @@ TimeClockFren:¶¨Ê±Æ÷µÄÊäÈëÊ±ÖÓÆµÂÊ(µ¥Î»MHZ)£¬Ò²¾ÍÊÇµ±Ç°Ê¹ÓÃµÄTIMËùÓÃµÄCLOCKµÄÊ±Ö
 */
 
 
-
 /*
 	Í¨¹ıTIM1µÄCH2½øĞĞÊäÈë²¶»ñ£¬ÉèÖÃ¶ÔÊäÈëĞÅºÅÉÏÉıÑØ»¹ÊÇÏÂ½µÑØ½øĞĞÊäÈë²¶»ñ
 	ÓÉÓÚÊÇÉÏÉıÑØÔÚ±ä¿íºÍ±äÕ­£¬ËùÒÔÎÒÊÇ¶ÔÓÚÉÏÉıÑØ½øĞĞ²¶»ñ
 	Èç¹ûÏ£Íû²¶»ñĞÅºÅµÄÃ¿Ò»¸ö±ßÑØ£¬Ôò²»·ÖÆµ
 */
 
- void TIM1_CONFIG(void){
+void TIM1_CONFIG(void){
 	GPIO_InitTypeDef GPIO;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
 	//ÅäÖÃGPIO
@@ -49,7 +49,7 @@ TimeClockFren:¶¨Ê±Æ÷µÄÊäÈëÊ±ÖÓÆµÂÊ(µ¥Î»MHZ)£¬Ò²¾ÍÊÇµ±Ç°Ê¹ÓÃµÄTIMËùÓÃµÄCLOCKµÄÊ±Ö
 	TIM_TimeBaseInitTypeDef TIM;
 	TIM.TIM_ClockDivision=TIM_CKD_DIV1 ;
 	TIM.TIM_CounterMode=TIM_CounterMode_Up;
-	TIM.TIM_Prescaler=4200-1;
+	TIM.TIM_Prescaler=420-1;
 	TIM.TIM_RepetitionCounter=0;
 	TIM.TIM_Period=(0xffff-1);
 	TIM_TimeBaseInit(TIM1,&TIM);
@@ -59,7 +59,7 @@ TimeClockFren:¶¨Ê±Æ÷µÄÊäÈëÊ±ÖÓÆµÂÊ(µ¥Î»MHZ)£¬Ò²¾ÍÊÇµ±Ç°Ê¹ÓÃµÄTIMËùÓÃµÄCLOCKµÄÊ±Ö
 	TIM_IC.TIM_ICPolarity=TIM_ICPolarity_Rising;
 	TIM_IC.TIM_ICPrescaler=TIM_ICPSC_DIV1;
 	TIM_IC.TIM_ICSelection=TIM_ICSelection_DirectTI;
-	TIM_IC.TIM_ICFilter=0x0;
+	TIM_IC.TIM_ICFilter=0x00;
 	TIM_ICInit(TIM1,&TIM_IC);
 	NVIC_InitTypeDef NVICA;
 	NVICA.NVIC_IRQChannel=TIM1_CC_IRQn;
@@ -68,10 +68,10 @@ TimeClockFren:¶¨Ê±Æ÷µÄÊäÈëÊ±ÖÓÆµÂÊ(µ¥Î»MHZ)£¬Ò²¾ÍÊÇµ±Ç°Ê¹ÓÃµÄTIMËùÓÃµÄCLOCKµÄÊ±Ö
 	NVICA.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVICA);
 	TIM_ClearFlag(TIM1,TIM_IT_CC2|TIM_IT_Update);
-	
 	TIM_ITConfig(TIM1,TIM_IT_CC2|TIM_IT_Update,ENABLE);
 	TIM_Cmd(TIM1,ENABLE);
 }
+
 
 
 /*
@@ -107,36 +107,34 @@ void TIM3_CONFIG(void){
 	TIM_TimeBaseInitTypeDef TIM;
 	TIM.TIM_ClockDivision=TIM_CKD_DIV1;
 	TIM.TIM_CounterMode=TIM_CounterMode_Up;
+	//ÆµÂÊÊÇ50hz
 	TIM.TIM_Period=20000-1;
-	TIM.TIM_Prescaler=42-1;
+	TIM.TIM_Prescaler=84-1;
 	TIM.TIM_RepetitionCounter=0;
 	TIM_TimeBaseInit(TIM3,&TIM);
-	
 	CH1.TIM_OCMode=TIM_OCMode_PWM1;
 	CH1.TIM_OutputState=TIM_OutputState_Enable;
 	CH1.TIM_OCPolarity=TIM_OCPolarity_High;
-	CH1.TIM_Pulse=10000;
+	CH1.TIM_Pulse=2000;
 	TIM_OC1Init(TIM3,&CH1);
+	//ÅäÖÃÖ®ºó²Å¿ÉÒÔÔÚÔËĞĞµÄÊ±ºò¿É±à³ÌµÄĞŞ¸Ä compareµÄÖµ
 	TIM_OC1PreloadConfig(TIM3,TIM_OCPreload_Enable);
-	
 	CH2.TIM_OCMode=TIM_OCMode_PWM1;
 	CH2.TIM_OutputState=TIM_OutputState_Enable;
 	CH2.TIM_OCPolarity=TIM_OCPolarity_High;
-	CH2.TIM_Pulse=10000;
+	CH2.TIM_Pulse=2000;
 	TIM_OC2Init(TIM3,&CH2);
 	TIM_OC2PreloadConfig(TIM3,TIM_OCPreload_Enable);
-	
 	CH3.TIM_OCMode=TIM_OCMode_PWM1;
 	CH3.TIM_OutputState=TIM_OutputState_Enable;
 	CH3.TIM_OCPolarity=TIM_OCPolarity_High;
-	CH3.TIM_Pulse=10000;
+	CH3.TIM_Pulse=2000;
 	TIM_OC3Init(TIM3,&CH3);
 	TIM_OC3PreloadConfig(TIM3,TIM_OCPreload_Enable);
-	
 	CH4.TIM_OCMode=TIM_OCMode_PWM1;
 	CH4.TIM_OutputState=TIM_OutputState_Enable;
 	CH4.TIM_OCPolarity=TIM_OCPolarity_High;
-	CH4.TIM_Pulse=10000;
+	CH4.TIM_Pulse=2000;
 	TIM_OC4Init(TIM3,&CH4);
 	TIM_OC4PreloadConfig(TIM3,TIM_OCPreload_Enable);
 	

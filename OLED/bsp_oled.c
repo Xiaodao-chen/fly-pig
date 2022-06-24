@@ -3,24 +3,15 @@
 #include <stdio.h>
 #include "bsp_systick.h"
 void SEND_BYTE(u8 addr,u8 data){
-	//首先还是需要i2c 总线并不忙碌
 	while(I2C_GetFlagStatus(OLED_I2C,I2C_FLAG_BUSY)==1);
-	//产生起始信号
 	I2C_GenerateSTART(OLED_I2C,ENABLE);
 	while(I2C_CheckEvent(OLED_I2C,I2C_EVENT_MASTER_MODE_SELECT)==ERROR);
-	
 	I2C_Send7bitAddress(OLED_I2C,OLED_ADDR,I2C_Direction_Transmitter);
-	
 	while(I2C_CheckEvent(OLED_I2C,I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)==ERROR);
-	
-	
 	I2C_SendData(OLED_I2C,addr);
 	while(I2C_CheckEvent(OLED_I2C,I2C_EVENT_MASTER_BYTE_TRANSMITTED)==ERROR);
-	
-	
 	I2C_SendData(OLED_I2C,data);
 	while(I2C_CheckEvent(OLED_I2C,I2C_EVENT_MASTER_BYTE_TRANSMITTED)==ERROR);
-	
 	I2C_GenerateSTOP(OLED_I2C,ENABLE);
 }
 	
@@ -39,7 +30,6 @@ void OLED_SetPos(unsigned char x, unsigned char y) //设置起始点坐标
 
 
 void Send_Str(u8 addr,char str1[]){
-	
 	int i=0;
 	while(I2C_GetFlagStatus(OLED_I2C,I2C_FLAG_BUSY)==1);	
 	I2C_GenerateSTART(OLED_I2C,ENABLE);
@@ -59,11 +49,7 @@ void Send_Str(u8 addr,char str1[]){
 
 
 
-
-
-
-
-void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[])
+void OLED_ShowStr(unsigned char x, unsigned char y, char ch[])
 {
 	unsigned char c = 0,i = 0,j = 0,h=0;
 	while(ch[j] != '\0'){		
@@ -81,7 +67,6 @@ void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[])
 				j++;
 				h++;
 			}
-
 }
 
 
@@ -143,7 +128,7 @@ void OLED_ON(void){
 
 void OLED_Init(void)
 {
-	Systick_Delay_ms(1000);
+ 
 	char a[29];
 	a[0]=0x20; //连续发送两个 设置是页编辑
 	a[1]=0x02;

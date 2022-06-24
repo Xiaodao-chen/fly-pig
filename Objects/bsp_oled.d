@@ -41,10 +41,10 @@
 .\objects\bsp_oled.o: .\f401\CMSIS\stm32f4xx.h
 .\objects\bsp_oled.o: .\f401\FWLIB\misc.h
 .\objects\bsp_oled.o: .\f401\CMSIS\stm32f4xx.h
-.\objects\bsp_oled.o: .\TIM\bsp_tim.h
-.\objects\bsp_oled.o: .\f401\CMSIS\stm32f4xx.h
-.\objects\bsp_oled.o: OLED\bsp_zifu.h
-.\objects\bsp_oled.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\bsp_oled.o: .\SYSTICK\bsp_systick.h
 .\objects\bsp_oled.o: .\f401\CMSIS\stm32f4xx.h
 .\objects\bsp_oled.o: .\f401\CMSIS\core_cm4.h
+.\objects\bsp_oled.o: .\TIM\bsp_tim.h
+.\objects\bsp_oled.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_oled.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\bsp_oled.o: OLED\bsp_zifu.h

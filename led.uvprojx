@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F401xx,USE_HSE_BYPASS,STM32F401XX_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>.\LED;.\f401\FWLIB;.\f401\CMSIS;.\f401\STARTUP;.\LED;.\USART;.\ESP8266;.\SYSTICK;.\TIM;.\I2C;.\OLED</IncludePath>
+              <IncludePath>.\LED;.\f401\FWLIB;.\f401\CMSIS;.\f401\STARTUP;.\LED;.\USART;.\ESP8266;.\SYSTICK;.\TIM;.\I2C;.\OLED;.\GY86;.\PPM;.\Ray</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -422,6 +422,21 @@
               <FileName>bsp_oled.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\OLED\bsp_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_gy86.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\GY86\bsp_gy86.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_ppm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\PPM\bsp_ppm.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_ray.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Ray\bsp_ray.c</FilePath>
             </File>
           </Files>
         </Group>

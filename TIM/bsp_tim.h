@@ -1,10 +1,12 @@
 #ifndef _BSP_TIM_H
 #define _BSP_TIM_H
 #include "stm32f4xx.h"
-
-//TIM1 被使用为接收器模块的使用 PA9 被用作TIM1_CH2接受PPM
-//TIM3 的CH1,CH2,CH3,CH4 被分别用于PWM的输出  输出的频率是自己决定的
-
+#include "stm32f4xx_tim.h"
+/*
+TIM1 被使用为接收器模块的使用 PA9 被用作TIM1_CH2接受PPM
+TIM3 的CH1,CH2,CH3,CH4 被分别用于PWM的输出  输出的频率是自己决定的
+TIM3 的CH1,CH2,CH3,CH4 分别是 PA6,PA7,PB0,PB1
+*/
 
 
 #define Period 1000-1

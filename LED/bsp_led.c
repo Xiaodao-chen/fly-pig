@@ -22,7 +22,7 @@ void LED_OFF(void){
 }
 
 
-void LED_SHINING(int ti){
+void LED_SHINING(){
 	while(1){
 	
 	LED_OFF();
