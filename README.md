@@ -28,7 +28,9 @@
 
 ```
 +---DebugConfig
-+---ESP8266
++---Attitude_solving
+|   +---datafusion.c
+|   \---datafusion.h
 +---f401
 |   +---CMSIS
 |   +---FWLIB
