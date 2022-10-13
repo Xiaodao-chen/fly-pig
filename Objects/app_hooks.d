@@ -1,0 +1,9 @@
+.\objects\app_hooks.o: BSP\include\app_hooks.c
+.\objects\app_hooks.o: .\ucos\source\os.h
+.\objects\app_hooks.o: .\ucos\source\ucos_ii.h
+.\objects\app_hooks.o: .\BSP\include\app_cfg.h
+.\objects\app_hooks.o: C:\ES\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\app_hooks.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\app_hooks.o: .\BSP\include\os_cfg.h
+.\objects\app_hooks.o: .\ucos\port\os_cpu.h
+.\objects\app_hooks.o: .\ucos\source\os_trace.h
