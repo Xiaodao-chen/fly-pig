@@ -27,25 +27,21 @@
 ## 文件结构
 
 ```
-+---DebugConfig
-+---ESP8266
-+---f401
-|   +---CMSIS
-|   +---FWLIB
-|   \---STARTUP
-+---I2C
-+---LED
-+---Listings
-+---Objects
-+---OLED
-+---RTE
-|   +---Device
-|   |   \---STM32F401RETx
-|   \---_Target_1
-+---SYSTICK
-+---TIM
-+---USART
-\---USER
+├───Attitude_solving
+├───BSP
+│   ├───include
+│   └───source
+├───DebugConfig
+├───f401
+│   ├───CMSIS
+│   ├───FWLIB
+│   └───STARTUP
+├───Listings
+├───Objects
+├───ucos
+│   ├───port
+│   └───source
+└───USER
 ```
 
 # 未完待续
