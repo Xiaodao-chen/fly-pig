@@ -15,39 +15,34 @@
 
 ## 需要完成：
 
-1. ucos ii的移植
+1. ucos ii的移植 finish
 2. 姿态解算算法的实现
 3. PID算法实现
-4. 串口通信 与上位机的连接进行数据传递
-5. I2C与OLED通信
-6. 主控对于接收机PPM的处理
-7. 主控对于电调PWM的输出
-8. 一体板 PCB设计 制作
+4. 串口通信 与上位机的连接进行数据传递 finish
+5. I2C与OLED通信 finish
+6. 主控对于接收机PPM的处理 finish
+7. 主控对于电调PWM的输出  finish
+8. 一体板 PCB设计 制作  finish
 
 ## 文件结构
 
 ```
-+---DebugConfig
-+---Attitude_solving
-|   +---datafusion.c
-|   \---datafusion.h
-+---f401
-|   +---CMSIS
-|   +---FWLIB
-|   \---STARTUP
-+---I2C
-+---LED
-+---Listings
-+---Objects
-+---OLED
-+---RTE
-|   +---Device
-|   |   \---STM32F401RETx
-|   \---_Target_1
-+---SYSTICK
-+---TIM
-+---USART
-\---USER
+├───Attitude_solving
+├───BSP
+│   ├───include
+│   └───source
+├───DebugConfig
+├───f401
+│   ├───CMSIS
+│   ├───FWLIB
+│   └───STARTUP
+├───fly-pig
+├───Listings
+├───Objects
+├───ucos
+│   ├───port
+│   └───source
+└───USER
 ```
 
 # 未完待续
