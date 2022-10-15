@@ -28,9 +28,9 @@ void LED_SHINING(){
 	while(1){
 	
 	LED_OFF();
-	TIMDelay(100000);
+	TIMDelay(1000);
 	LED_ON();
-	TIMDelay(100000);
+	TIMDelay(1000);
 	}
 }
 

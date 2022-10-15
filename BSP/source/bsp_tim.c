@@ -151,9 +151,9 @@ void TIM4_CONFIG(void){
 	TIM_TimeBaseInitTypeDef TIM;
 	TIM.TIM_ClockDivision=TIM_CKD_DIV1;
 	TIM.TIM_CounterMode=TIM_CounterMode_Up;
-	//频率是1Mhz
-	TIM.TIM_Period=10000-1;
-	TIM.TIM_Prescaler=8400-1;
+	//频率是1khz
+	TIM.TIM_Period=1000-1;
+	TIM.TIM_Prescaler=84-1;
 	TIM.TIM_RepetitionCounter=0;
 	TIM_TimeBaseInit(TIM4,&TIM);
 	//TIM_ARRPreloadConfig(TIM4,ENABLE);
@@ -164,9 +164,8 @@ void TIM4_CONFIG(void){
 void TIMDelay(uint32_t Times){
 	TIM_Cmd(TIM4,ENABLE);
 	while(Times--){
-		while(TIM_GetFlagStatus(TIM4,TIM_FLAG_Update)==RESET){
-			TIM_ClearFlag(TIM4,TIM_FLAG_Update);
-		}
+		while(!(TIM4->SR& TIM_SR_UIF)){}
+		TIM4->SR &=~TIM_SR_UIF;//将UIF 置0 ，清楚中断标志
 	}
 	TIM_Cmd(TIM4,DISABLE);
 }

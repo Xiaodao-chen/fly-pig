@@ -150,7 +150,7 @@ void PPM_Init(void){
 	TIM_SetCompare3(TIM3,2000);
 	TIM_SetCompare4(TIM3,2000);
 	
-	OSTimeDly(4000);
+	TIMDelay(4000);
 	TIM_SetCompare1(TIM3,1000);
 	TIM_SetCompare2(TIM3,1000);
 	TIM_SetCompare3(TIM3,1000);

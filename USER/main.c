@@ -28,14 +28,21 @@ extern char esp[20];
 int m=0;
 int time=0;
 
-#define GY86_THREAD    8
+#define GY86_THREAD    7
 #define GY86_SIZE      256
 OS_STK GETDATA_thread_stack[GY86_SIZE];
 
-    
+#define Control_Motor  8
+#define Control_SIZE   128
+OS_STK Control_thread_stack[Control_SIZE];
+
 #define OLED_THREAD    9
 #define OLED_SIZE      256
 OS_STK OLED_thread_stack[OLED_SIZE];
+
+#define ANO_Thread   	 10
+#define ANO_SIZE     	 128
+OS_STK ANO_thread_stack[ANO_SIZE];
 
 
 
@@ -60,7 +67,6 @@ void GY86_Thread(void* a ){
 void OLED_Thread(void* a){
 	a=a;
 	while(1){
-		
 		OSTimeDly(3);
 	}
 }
@@ -78,6 +84,9 @@ void MY_Init(void){
 	USART6_CONFIG();
 	MPU_Init();
 	HMC_Init();
+	PPM_Init();
+	OLED_PRINT("Ready",2);
+	Fly_Start();
 }
 
 int main(){

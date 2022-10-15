@@ -35,7 +35,7 @@ hmc_Struct hmc;
 
 void MPU_Init(void){	
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X6B,0x80);
-	TIMDelay(5000);
+	TIMDelay(10);
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0x6B,0x01);
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X6A,0X00);
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X37,0x02);
@@ -48,7 +48,7 @@ void MPU_Init(void){
 
 void HMC_Init(void){
 	//ÐèÒªÑÓÊ±
-	TIMDelay(5000);
+	TIMDelay(10);
 	I2C_Send_Str(HMC_I2C,HMC5883_ADDRESS,0x00,(uint8_t*)"\x78\x00\x00",3);
 }
 
