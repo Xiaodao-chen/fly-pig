@@ -51,6 +51,8 @@
     EXPORT  OSIntCtxSw
     EXPORT  OS_CPU_PendSVHandler
 
+	IMPORT SYSVIEW_TaskSwitchedIn
+
     IF {FPU} != "SoftVFP"
     EXPORT  OS_CPU_FP_Reg_Push
     EXPORT  OS_CPU_FP_Reg_Pop
@@ -347,9 +349,21 @@ OS_CPU_PendSVHandler
     BL      OSTaskSwHook                                        ; Call OSTaskSwHook() for FPU Push & Pop
 
     LDR     R0, =OSPrioCur                                      ; OSPrioCur = OSPrioHighRdy;
-    LDR     R1, =OSPrioHighRdy
+	LDR     R1, =OSPrioHighRdy
     LDRB    R2, [R1]
     STRB    R2, [R0]
+
+;SystemView ´úÂë
+	LDR  R1,=OSTCBHighRdy
+	LDR  R2,[R1]
+	;STR R2,[R0]
+	
+	MOV R0,R2
+	BL  SYSVIEW_TaskSwitchedIn
+;´úÂë½áÊø
+
+	
+
 
     LDR     R1, =OSTCBHighRdy                                   ; OSTCBCur  = OSTCBHighRdy;
     LDR     R2, [R1]

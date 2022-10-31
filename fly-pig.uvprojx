@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F401xx,USE_HSE_BYPASS,STM32F401XX_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>.\f401\FWLIB;.\BSP\include;.\f401\CMSIS;.\f401\STARTUP;.\Attitude_solving;.\ucos\source;.\ucos\port</IncludePath>
+              <IncludePath>.\f401\FWLIB;.\BSP\include;.\f401\CMSIS;.\f401\STARTUP;.\Attitude_solving;.\ucos\source;.\ucos\port;.\USER;.\Sysemview\SEGGER;.\Sysemview\Sample\uCOS-II;.\Sysemview\Config;.\PID</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -392,6 +392,16 @@
               <FileName>datafusion.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Attitude_solving\datafusion.c</FilePath>
+            </File>
+            <File>
+              <FileName>altitude.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\altitude.c</FilePath>
+            </File>
+            <File>
+              <FileName>PID.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\PID\PID.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -638,16 +648,16 @@
               <FileType>5</FileType>
               <FilePath>.\BSP\include\os_cfg.h</FilePath>
             </File>
+            <File>
+              <FileName>bsp_dma.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\BSP\include\bsp_dma.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>bsp/source</GroupName>
           <Files>
-            <File>
-              <FileName>bsp_esp8266.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\BSP\source\bsp_esp8266.c</FilePath>
-            </File>
             <File>
               <FileName>bsp_gy86.c</FileName>
               <FileType>1</FileType>
@@ -679,11 +689,6 @@
               <FilePath>.\BSP\source\bsp_ray.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_systick.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\BSP\source\bsp_systick.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\BSP\source\bsp_tim.c</FilePath>
@@ -692,6 +697,16 @@
               <FileName>bsp_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\BSP\source\bsp_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>ANO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\ANO.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\BSP\source\bsp_dma.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -782,6 +797,41 @@
               <FileName>os_dbg.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ucos\port\os_dbg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Systemview</GroupName>
+          <Files>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sysemview\SEGGER\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sysemview\SEGGER\SEGGER_RTT_printf.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_SYSVIEW.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sysemview\SEGGER\SEGGER_SYSVIEW.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_SYSVIEW_uCOSII.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sysemview\Sample\uCOS-II\SEGGER_SYSVIEW_uCOSII.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_SYSVIEW_Config_uCOSII.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sysemview\Sample\uCOS-II\Config\Cortex-M\SEGGER_SYSVIEW_Config_uCOSII.c</FilePath>
+            </File>
+            <File>
+              <FileName>segger_rtt_asm_armv7m.o</FileName>
+              <FileType>3</FileType>
+              <FilePath>.\segger_rtt_asm_armv7m.o</FilePath>
             </File>
           </Files>
         </Group>

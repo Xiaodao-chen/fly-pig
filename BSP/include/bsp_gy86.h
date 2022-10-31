@@ -41,13 +41,26 @@ typedef struct X4{
 	float Z;
 }hmc_Struct;
 
+
+
+extern mpu_Struct mpu;
+extern hmc_Struct hmc;
+
 //5883是 MPU6050的从设备，需要初始化才可以接到I2C3的总线上
 
 #define GYRO_250DPS 131.072f
+#define GYRO_1000DPS 32.768f
+#define RAD_TO_ANGLE_2000H 1877.442f
+#define RAD_TO_ANGLE_250H 7640.842f
+
+#define GYRO_2000DPS 16.384f
+
 #define ACCEL_2G 1673.469f
 
 #define MPU6050_ADDRESS 	0XD0 
 #define HMC5883_ADDRESS   0X3C
+#define HMC5883_ADDRESS_WRITE   0X3C
+#define HMC5883_ADDRESS_READ   0X3C
 
 
 
@@ -64,8 +77,12 @@ void MPU_Show(void);
 void HMC_Show(void);
 void HMC_Get(void);
 void GY86_getdata(void);
-void GY86_offset(void);
+void GY86_offset(unsigned short times);
 void angle_show(void);
+void MPU_Show_Init(void);
+void HMC_Show_Init(void);
+void HMC_offset(void);
+void Buttons_CONFIG(void);
 #endif
 
 

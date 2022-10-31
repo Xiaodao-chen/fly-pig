@@ -6,3 +6,11 @@
 .\objects\os_mutex.o: .\BSP\include\os_cfg.h
 .\objects\os_mutex.o: .\ucos\port\os_cpu.h
 .\objects\os_mutex.o: .\ucos\source\os_trace.h
+.\objects\os_mutex.o: .\Sysemview\Sample\uCOS-II\os_trace_events.h
+.\objects\os_mutex.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW.h
+.\objects\os_mutex.o: .\Sysemview\SEGGER\SEGGER.h
+.\objects\os_mutex.o: .\Sysemview\Config\Global.h
+.\objects\os_mutex.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW_ConfDefaults.h
+.\objects\os_mutex.o: .\Sysemview\Config\SEGGER_SYSVIEW_Conf.h
+.\objects\os_mutex.o: .\Sysemview\Config\SEGGER_RTT_Conf.h
+.\objects\os_mutex.o: .\ucos\source\ucos_ii.h

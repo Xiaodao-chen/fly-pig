@@ -27,7 +27,7 @@ void OLED_ON(void);
 void OLED_Init(void);
 void OLED_CLS(void);void OLED_Str(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize);
 void SEND_BYTE(uint8_t addr,uint8_t data);
-void OLED_ShowStr(unsigned char x, unsigned char y,  char ch[]);
+void OLED_ShowStr(unsigned char x, unsigned char y,  char ch[],uint8_t size);
 void OLED_Scroll(int START,int END,int DIRECT); //∆¡ƒªœÚ…œ“∆∂Ø
 void OLED_Up(uint8_t up);
 void OLED_PRINT( char ch[],int size);

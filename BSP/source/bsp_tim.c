@@ -1,7 +1,7 @@
    #include "bsp_tim.h"
 	 #include "bsp_oled.h"
 	 
-//extern uint32_t USING_TIME; 
+
 /*
 	extern ÷ª «‘⁄,h Œƒº˛÷–…˘√˜µƒ£¨∑√Œ µƒ∂º «Õ¨“ª∏ˆ∂´Œ˜
 */
@@ -31,6 +31,7 @@ TimeClockFren:∂® ±∆˜µƒ ‰»Î ±÷”∆µ¬ (µ•ŒªMHZ)£¨“≤æÕ «µ±«∞ π”√µƒTIMÀ˘”√µƒCLOCKµƒ ±÷
 	Õ®π˝TIM1µƒCH4Ω¯–– ‰»Î≤∂ªÒ£¨…Ë÷√∂‘ ‰»Î–≈∫≈…œ…˝—ÿªπ «œ¬Ωµ—ÿΩ¯–– ‰»Î≤∂ªÒ
 	”…”⁄ «…œ…˝—ÿ‘⁄±‰øÌ∫Õ±‰’≠£¨À˘“‘Œ“ «∂‘”⁄…œ…˝—ÿΩ¯––≤∂ªÒ
 	»Áπ˚œ£Õ˚≤∂ªÒ–≈∫≈µƒ√ø“ª∏ˆ±ﬂ—ÿ£¨‘Ú≤ª∑÷∆µ
+	À‰»ª…Ë÷√¡À…œ…˝—ÿ÷–∂œ£¨µ´ «Œ“≤¢√ª”– π”√À˚
 */
 
 void TIM1_CONFIG(void){
@@ -47,7 +48,7 @@ void TIM1_CONFIG(void){
 	//TIM1  ±ª˘ µƒ≥ı ºªØ
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1,ENABLE);
 	TIM_ClearITPendingBit(TIM1, TIM_IT_Update );
-	TIM_TimeBaseInitTypeDef TIM;
+	TIM_TimeBaseInitTypeDef TIM; 
 	TIM.TIM_ClockDivision=TIM_CKD_DIV1 ;
 	TIM.TIM_CounterMode=TIM_CounterMode_Up;
 	TIM.TIM_Prescaler=420-1;
@@ -62,6 +63,7 @@ void TIM1_CONFIG(void){
 	TIM_IC.TIM_ICSelection=TIM_ICSelection_DirectTI;
 	TIM_IC.TIM_ICFilter=0x00;
 	TIM_ICInit(TIM1,&TIM_IC);
+	//…Ë÷√ ±÷”÷–∂œ
 	NVIC_InitTypeDef NVICA;
 	NVICA.NVIC_IRQChannel=TIM1_CC_IRQn;
 	NVICA.NVIC_IRQChannelPreemptionPriority=1;
@@ -69,7 +71,7 @@ void TIM1_CONFIG(void){
 	NVICA.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVICA);
 	TIM_ClearFlag(TIM1,TIM_IT_CC4|TIM_IT_Update);
-	TIM_ITConfig(TIM1,TIM_IT_CC4|TIM_IT_Update,ENABLE);// ‰»Î≤∂ªÒ÷–∂œ£¨∫Õ…œ…˝—ÿ÷–∂œ
+	TIM_ITConfig(TIM1,TIM_IT_CC4,ENABLE);//|TIM_IT_Update,ENABLE);// ‰»Î≤∂ªÒ÷–∂œ£¨∫ÕUpdate“Á≥ˆ ÷–∂œ
 	TIM_Cmd(TIM1,ENABLE);
 }
 
@@ -146,7 +148,7 @@ void TIM3_CONFIG(void){
 
 void TIM4_CONFIG(void){
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE);
-	TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
+	TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
 	
 	TIM_TimeBaseInitTypeDef TIM;
 	TIM.TIM_ClockDivision=TIM_CKD_DIV1;
@@ -157,10 +159,71 @@ void TIM4_CONFIG(void){
 	TIM.TIM_RepetitionCounter=0;
 	TIM_TimeBaseInit(TIM4,&TIM);
 	//TIM_ARRPreloadConfig(TIM4,ENABLE);
-	
-
 }
 
+void TIM2_CONFIG(void){
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
+	TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
+	
+	TIM_TimeBaseInitTypeDef TIM;
+	TIM.TIM_ClockDivision=TIM_CKD_DIV1;
+	TIM.TIM_CounterMode=TIM_CounterMode_Up;
+	//∆µ¬  «1khz
+	TIM.TIM_Period=0xffff-1;
+	TIM.TIM_Prescaler=84-1;
+	TIM.TIM_RepetitionCounter=0;
+	TIM_TimeBaseInit(TIM2,&TIM);
+	TIM_Cmd(TIM2,ENABLE);
+}
+
+void TIM5_CONFIG(void){
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5,ENABLE);
+	TIM_ClearITPendingBit(TIM5,TIM_IT_Update);
+	
+	TIM_TimeBaseInitTypeDef TIM;
+	TIM.TIM_ClockDivision=TIM_CKD_DIV1;
+	TIM.TIM_CounterMode=TIM_CounterMode_Up;
+	//∆µ¬  «1Mhz
+	TIM.TIM_Period=0xffff-1;
+	TIM.TIM_Prescaler=84-1;
+	TIM.TIM_RepetitionCounter=0;
+	TIM_TimeBaseInit(TIM5,&TIM);
+	TIM_Cmd(TIM5,ENABLE);
+}
+
+float PID_GETTIME(void){
+	static unsigned int num=0;
+	if(num==1){
+		TIM5->CNT=0;
+		num=0;//œ¬¥Œø™ ºº∆ ˝
+	}else {
+		float time=0.0f;
+		int now=0;
+		now=TIM5->CNT;
+		time=(now)/2000000.0;
+		num=1;
+		return time;
+	}
+	return 0;
+}
+
+float GY86_GETTIME(void){
+	static unsigned int num=0;
+	if(num==1){//∂¡»°start  ±º‰
+		TIM2->CNT=0;
+		num=0;
+	}else{
+		float time=0.0f;
+		int now=0;
+		now=TIM2->CNT;
+		//≥˝“‘2Mhz±Ì æ √Î
+		time=(now)/2000000.0;
+		num=1;
+		return time;
+	}
+	return 0;//÷¥––µΩ’‚±Ì æ «start
+}
+	
 void TIMDelay(uint32_t Times){
 	TIM_Cmd(TIM4,ENABLE);
 	while(Times--){
@@ -169,6 +232,8 @@ void TIMDelay(uint32_t Times){
 	}
 	TIM_Cmd(TIM4,DISABLE);
 }
+
+
 
 
 

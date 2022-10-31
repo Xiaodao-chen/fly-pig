@@ -223,9 +223,9 @@ INT8U  OSTaskCreate (void   (*task)(void *p_arg),
 {
     OS_STK     *psp;
     INT8U       err;
-#if OS_CRITICAL_METHOD == 3u                 /* Allocate storage for CPU status register               */
+//#if OS_CRITICAL_METHOD == 3u 默认使用方法3                 /* Allocate storage for CPU status register               */
     OS_CPU_SR   cpu_sr = 0u;
-#endif
+//#endif
 
 
 

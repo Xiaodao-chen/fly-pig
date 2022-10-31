@@ -60,3 +60,13 @@
 .\objects\bsp_gy86.o: .\BSP\include\os_cfg.h
 .\objects\bsp_gy86.o: .\ucos\port\os_cpu.h
 .\objects\bsp_gy86.o: .\ucos\source\os_trace.h
+.\objects\bsp_gy86.o: .\Sysemview\Sample\uCOS-II\os_trace_events.h
+.\objects\bsp_gy86.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW.h
+.\objects\bsp_gy86.o: .\Sysemview\SEGGER\SEGGER.h
+.\objects\bsp_gy86.o: .\Sysemview\Config\Global.h
+.\objects\bsp_gy86.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW_ConfDefaults.h
+.\objects\bsp_gy86.o: .\Sysemview\Config\SEGGER_SYSVIEW_Conf.h
+.\objects\bsp_gy86.o: .\Sysemview\Config\SEGGER_RTT_Conf.h
+.\objects\bsp_gy86.o: .\ucos\source\ucos_ii.h
+.\objects\bsp_gy86.o: .\BSP\include\bsp_usart.h
+.\objects\bsp_gy86.o: .\f401\CMSIS\stm32f4xx.h

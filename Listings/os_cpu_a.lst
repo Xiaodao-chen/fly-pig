@@ -84,542 +84,556 @@ ARM Macro Assembler    Page 2
    51 00000000                 EXPORT           OSIntCtxSw
    52 00000000                 EXPORT           OS_CPU_PendSVHandler
    53 00000000         
-   54 00000000                 IF               {FPU} != "SoftVFP"
-   55 00000000                 EXPORT           OS_CPU_FP_Reg_Push
-   56 00000000                 EXPORT           OS_CPU_FP_Reg_Pop
-   57 00000000                 ENDIF
-   58 00000000         
-   59 00000000         
-   60 00000000         ;*******************************************************
-                       *************************************************
-   61 00000000         ;                                               EQUATES
+   54 00000000                 IMPORT           SYSVIEW_TaskSwitchedIn
+   55 00000000         
+   56 00000000                 IF               {FPU} != "SoftVFP"
+   57 00000000                 EXPORT           OS_CPU_FP_Reg_Push
+   58 00000000                 EXPORT           OS_CPU_FP_Reg_Pop
+   59 00000000                 ENDIF
+   60 00000000         
+   61 00000000         
    62 00000000         ;*******************************************************
                        *************************************************
-   63 00000000         
-   64 00000000 E000ED04 
+   63 00000000         ;                                               EQUATES
+   64 00000000         ;*******************************************************
+                       *************************************************
+   65 00000000         
+   66 00000000 E000ED04 
                        NVIC_INT_CTRL
                                EQU              0xE000ED04  ; Interrupt control
                                                              state register.
-   65 00000000 E000ED22 
+   67 00000000 E000ED22 
                        NVIC_SYSPRI14
                                EQU              0xE000ED22  ; System priority r
                                                             egister (priority 1
                                                             4).
-   66 00000000 000000FF 
+   68 00000000 000000FF 
                        NVIC_PENDSV_PRI
                                EQU              0xFF        ; PendSV priority v
                                                             alue (lowest).
-   67 00000000 10000000 
+   69 00000000 10000000 
                        NVIC_PENDSVSET
                                EQU              0x10000000  ; Value to trigger 
                                                             PendSV exception.
-   68 00000000         
-   69 00000000         
-   70 00000000         ;*******************************************************
-                       *************************************************
-   71 00000000         ;                                     CODE GENERATION DI
-                       RECTIVES
+   70 00000000         
+   71 00000000         
    72 00000000         ;*******************************************************
                        *************************************************
-   73 00000000         
-   74 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+   73 00000000         ;                                     CODE GENERATION DI
+                       RECTIVES
+   74 00000000         ;*******************************************************
+                       *************************************************
+   75 00000000         
+   76 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
 2
-   75 00000000                 THUMB
-   76 00000000                 REQUIRE8
-   77 00000000                 PRESERVE8
-   78 00000000         
+   77 00000000                 THUMB
+   78 00000000                 REQUIRE8
 
 
 
 ARM Macro Assembler    Page 3 
 
 
-   79 00000000         
-   80 00000000         ;*******************************************************
+   79 00000000                 PRESERVE8
+   80 00000000         
+   81 00000000         
+   82 00000000         ;*******************************************************
                        *************************************************
-   81 00000000         ;                                   FLOATING POINT REGIS
+   83 00000000         ;                                   FLOATING POINT REGIS
                        TERS PUSH
-   82 00000000         ;                             void  OS_CPU_FP_Reg_Push (
+   84 00000000         ;                             void  OS_CPU_FP_Reg_Push (
                        OS_STK  *stkPtr)
-   83 00000000         ;
-   84 00000000         ; Note(s) : 1) This function saves S16-S31 registers of 
-                       the Floating Point Unit.
    85 00000000         ;
-   86 00000000         ;           2) Pseudo-code is:
-   87 00000000         ;              a) Push remaining FPU regs S16-S31 on pro
+   86 00000000         ; Note(s) : 1) This function saves S16-S31 registers of 
+                       the Floating Point Unit.
+   87 00000000         ;
+   88 00000000         ;           2) Pseudo-code is:
+   89 00000000         ;              a) Push remaining FPU regs S16-S31 on pro
                        cess stack;
-   88 00000000         ;              b) Update OSTCBCur->OSTCBStkPtr;
-   89 00000000         ;*******************************************************
+   90 00000000         ;              b) Update OSTCBCur->OSTCBStkPtr;
+   91 00000000         ;*******************************************************
                        *************************************************
-   90 00000000         
-   91 00000000                 IF               {FPU} != "SoftVFP"
    92 00000000         
-   93 00000000         OS_CPU_FP_Reg_Push
-   94 00000000 F3EF 8109       MRS              R1, PSP     ; PSP is process st
+   93 00000000                 IF               {FPU} != "SoftVFP"
+   94 00000000         
+   95 00000000         OS_CPU_FP_Reg_Push
+   96 00000000 F3EF 8109       MRS              R1, PSP     ; PSP is process st
                                                             ack pointer
-   95 00000004 B121            CBZ              R1, OS_CPU_FP_nosave ; Skip FP 
+   97 00000004 B121            CBZ              R1, OS_CPU_FP_nosave ; Skip FP 
                                                             register save the f
                                                             irst time
-   96 00000006         
-   97 00000006 ED20 8A10       VSTMDB           R0!, {S16-S31}
-   98 0000000A 4942            LDR              R1, =OSTCBCur
-   99 0000000C 680A            LDR              R2, [R1]
-  100 0000000E 6010            STR              R0, [R2]
-  101 00000010         OS_CPU_FP_nosave
-  102 00000010 4770            BX               LR
-  103 00000012         
-  104 00000012                 ENDIF
+   98 00000006         
+   99 00000006 ED20 8A10       VSTMDB           R0!, {S16-S31}
+  100 0000000A 4944            LDR              R1, =OSTCBCur
+  101 0000000C 680A            LDR              R2, [R1]
+  102 0000000E 6010            STR              R0, [R2]
+  103 00000010         OS_CPU_FP_nosave
+  104 00000010 4770            BX               LR
   105 00000012         
-  106 00000012         
-  107 00000012         ;*******************************************************
+  106 00000012                 ENDIF
+  107 00000012         
+  108 00000012         
+  109 00000012         ;*******************************************************
                        *************************************************
-  108 00000012         ;                                   FLOATING POINT REGIS
+  110 00000012         ;                                   FLOATING POINT REGIS
                        TERS POP
-  109 00000012         ;                             void  OS_CPU_FP_Reg_Pop (O
+  111 00000012         ;                             void  OS_CPU_FP_Reg_Pop (O
                        S_STK  *stkPtr)
-  110 00000012         ;
-  111 00000012         ; Note(s) : 1) This function restores S16-S31 of the Flo
-                       ating Point Unit.
   112 00000012         ;
-  113 00000012         ;           2) Pseudo-code is:
-  114 00000012         ;              a) Restore regs S16-S31 of new process st
+  113 00000012         ; Note(s) : 1) This function restores S16-S31 of the Flo
+                       ating Point Unit.
+  114 00000012         ;
+  115 00000012         ;           2) Pseudo-code is:
+  116 00000012         ;              a) Restore regs S16-S31 of new process st
                        ack;
-  115 00000012         ;              b) Update OSTCBHighRdy->OSTCBStkPtr point
+  117 00000012         ;              b) Update OSTCBHighRdy->OSTCBStkPtr point
                        er of new proces stack;
-  116 00000012         ;*******************************************************
+  118 00000012         ;*******************************************************
                        *************************************************
-  117 00000012         
-  118 00000012                 IF               {FPU} != "SoftVFP"
   119 00000012         
-  120 00000012         OS_CPU_FP_Reg_Pop
-  121 00000012 ECB0 8A10       VLDMIA           R0!, {S16-S31}
+  120 00000012                 IF               {FPU} != "SoftVFP"
+  121 00000012         
 
 
 
 ARM Macro Assembler    Page 4 
 
 
-  122 00000016 4940            LDR              R1, =OSTCBHighRdy
-  123 00000018 680A            LDR              R2, [R1]
-  124 0000001A 6010            STR              R0, [R2]
-  125 0000001C 4770            BX               LR
-  126 0000001E         
-  127 0000001E                 ENDIF
+  122 00000012         OS_CPU_FP_Reg_Pop
+  123 00000012 ECB0 8A10       VLDMIA           R0!, {S16-S31}
+  124 00000016 4942            LDR              R1, =OSTCBHighRdy
+  125 00000018 680A            LDR              R2, [R1]
+  126 0000001A 6010            STR              R0, [R2]
+  127 0000001C 4770            BX               LR
   128 0000001E         
-  129 0000001E         
-  130 0000001E         ;*******************************************************
+  129 0000001E                 ENDIF
+  130 0000001E         
+  131 0000001E         
+  132 0000001E         ;*******************************************************
                        *************************************************
-  131 0000001E         ;                                   CRITICAL SECTION MET
+  133 0000001E         ;                                   CRITICAL SECTION MET
                        HOD 3 FUNCTIONS
-  132 0000001E         ;
-  133 0000001E         ; Description : Disable/Enable Kernel aware interrupts b
+  134 0000001E         ;
+  135 0000001E         ; Description : Disable/Enable Kernel aware interrupts b
                        y preserving the state of BASEPRI.  Generally speaking,
-  134 0000001E         ;               the state of the BASEPRI interrupt excep
+  136 0000001E         ;               the state of the BASEPRI interrupt excep
                        tion processing is stored in the local variable
-  135 0000001E         ;               'cpu_sr' & Kernel Aware interrupts are t
+  137 0000001E         ;               'cpu_sr' & Kernel Aware interrupts are t
                        hen disabled ('cpu_sr' is allocated in all functions
-  136 0000001E         ;               that need to disable Kernel aware interr
+  138 0000001E         ;               that need to disable Kernel aware interr
                        upts). The previous BASEPRI interrupt state is restored
-  137 0000001E         ;               by copying 'cpu_sr' into the BASEPRI reg
+  139 0000001E         ;               by copying 'cpu_sr' into the BASEPRI reg
                        ister.
-  138 0000001E         ;
-  139 0000001E         ; Prototypes  : OS_CPU_SR  OS_CPU_SR_Save   (OS_CPU_SR  
+  140 0000001E         ;
+  141 0000001E         ; Prototypes  : OS_CPU_SR  OS_CPU_SR_Save   (OS_CPU_SR  
                        new_basepri);
-  140 0000001E         ;               void       OS_CPU_SR_Restore(OS_CPU_SR  
+  142 0000001E         ;               void       OS_CPU_SR_Restore(OS_CPU_SR  
                        cpu_sr);
-  141 0000001E         ;
-  142 0000001E         ;
-  143 0000001E         ; Note(s)     : 1) These functions are used in general l
-                       ike this:
+  143 0000001E         ;
   144 0000001E         ;
-  145 0000001E         ;                  void Task (void *p_arg)
-  146 0000001E         ;                  {
-  147 0000001E         ;                  #if OS_CRITICAL_METHOD == 3          
+  145 0000001E         ; Note(s)     : 1) These functions are used in general l
+                       ike this:
+  146 0000001E         ;
+  147 0000001E         ;                  void Task (void *p_arg)
+  148 0000001E         ;                  {
+  149 0000001E         ;                  #if OS_CRITICAL_METHOD == 3          
                        /* Allocate storage for CPU status register  */
-  148 0000001E         ;                      OS_CPU_SR  cpu_sr;
-  149 0000001E         ;                  #endif
-  150 0000001E         ;
-  151 0000001E         ;                          :
-  152 0000001E         ;                          :
-  153 0000001E         ;                      OS_ENTER_CRITICAL();             
-                       /* cpu_sr = OS_CPU_SR_Save(new_basepri);     */
+  150 0000001E         ;                      OS_CPU_SR  cpu_sr;
+  151 0000001E         ;                  #endif
+  152 0000001E         ;
+  153 0000001E         ;                          :
   154 0000001E         ;                          :
-  155 0000001E         ;                          :
-  156 0000001E         ;                      OS_EXIT_CRITICAL();              
-                       /* OS_CPU_RestoreSR(cpu_sr);                 */
+  155 0000001E         ;                      OS_ENTER_CRITICAL();             
+                       /* cpu_sr = OS_CPU_SR_Save(new_basepri);     */
+  156 0000001E         ;                          :
   157 0000001E         ;                          :
-  158 0000001E         ;                          :
-  159 0000001E         ;                  }
-  160 0000001E         ;
-  161 0000001E         ;               2) Increasing priority using a write to 
+  158 0000001E         ;                      OS_EXIT_CRITICAL();              
+                       /* OS_CPU_RestoreSR(cpu_sr);                 */
+  159 0000001E         ;                          :
+  160 0000001E         ;                          :
+  161 0000001E         ;                  }
+  162 0000001E         ;
+  163 0000001E         ;               2) Increasing priority using a write to 
                        BASEPRI does not take effect immediately.
-  162 0000001E         ;                  (a) IMPLICATION  This erratum means t
+  164 0000001E         ;                  (a) IMPLICATION  This erratum means t
                        hat the instruction after an MSR to boost BASEPRI
-  163 0000001E         ;                      might incorrectly be preempted by
-                        an insufficient high priority exception.
-  164 0000001E         ;
+  165 0000001E         ;                      might incorrectly be preempted by
 
 
 
 ARM Macro Assembler    Page 5 
 
 
-  165 0000001E         ;                  (b) WORKAROUND  The MSR to boost BASE
-                       PRI can be replaced by the following code sequence:
+                        an insufficient high priority exception.
   166 0000001E         ;
-  167 0000001E         ;                      CPSID i
-  168 0000001E         ;                      MSR to BASEPRI
-  169 0000001E         ;                      DSB
-  170 0000001E         ;                      ISB
-  171 0000001E         ;                      CPSIE i
-  172 0000001E         ;*******************************************************
+  167 0000001E         ;                  (b) WORKAROUND  The MSR to boost BASE
+                       PRI can be replaced by the following code sequence:
+  168 0000001E         ;
+  169 0000001E         ;                      CPSID i
+  170 0000001E         ;                      MSR to BASEPRI
+  171 0000001E         ;                      DSB
+  172 0000001E         ;                      ISB
+  173 0000001E         ;                      CPSIE i
+  174 0000001E         ;*******************************************************
                        *************************************************
-  173 0000001E         
-  174 0000001E         OS_CPU_SR_Save
-  175 0000001E B672            CPSID            I           ; Cortex-M7 errata 
+  175 0000001E         
+  176 0000001E         OS_CPU_SR_Save
+  177 0000001E B672            CPSID            I           ; Cortex-M7 errata 
                                                             notice. See Note #2
                                                             
-  176 00000020 B402            PUSH             {R1}
-  177 00000022 F3EF 8111       MRS              R1, BASEPRI
-  178 00000026 F380 8811       MSR              BASEPRI, R0
-  179 0000002A F3BF 8F4F       DSB
-  180 0000002E F3BF 8F6F       ISB
-  181 00000032 4608            MOV              R0, R1
-  182 00000034 BC02            POP              {R1}
-  183 00000036 B662            CPSIE            I
-  184 00000038 4770            BX               LR
-  185 0000003A         
-  186 0000003A         OS_CPU_SR_Restore
-  187 0000003A B672            CPSID            I           ; Cortex-M7 errata 
+  178 00000020 B402            PUSH             {R1}
+  179 00000022 F3EF 8111       MRS              R1, BASEPRI
+  180 00000026 F380 8811       MSR              BASEPRI, R0
+  181 0000002A F3BF 8F4F       DSB
+  182 0000002E F3BF 8F6F       ISB
+  183 00000032 4608            MOV              R0, R1
+  184 00000034 BC02            POP              {R1}
+  185 00000036 B662            CPSIE            I
+  186 00000038 4770            BX               LR
+  187 0000003A         
+  188 0000003A         OS_CPU_SR_Restore
+  189 0000003A B672            CPSID            I           ; Cortex-M7 errata 
                                                             notice. See Note #2
                                                             
-  188 0000003C F380 8811       MSR              BASEPRI, R0
-  189 00000040 F3BF 8F4F       DSB
-  190 00000044 F3BF 8F6F       ISB
-  191 00000048 B662            CPSIE            I
-  192 0000004A 4770            BX               LR
-  193 0000004C         
-  194 0000004C         
-  195 0000004C         ;*******************************************************
+  190 0000003C F380 8811       MSR              BASEPRI, R0
+  191 00000040 F3BF 8F4F       DSB
+  192 00000044 F3BF 8F6F       ISB
+  193 00000048 B662            CPSIE            I
+  194 0000004A 4770            BX               LR
+  195 0000004C         
+  196 0000004C         
+  197 0000004C         ;*******************************************************
                        *************************************************
-  196 0000004C         ;                                         START MULTITAS
+  198 0000004C         ;                                         START MULTITAS
                        KING
-  197 0000004C         ;                                      void OSStartHighR
+  199 0000004C         ;                                      void OSStartHighR
                        dy(void)
-  198 0000004C         ;
-  199 0000004C         ; Note(s) : 1) This function triggers a PendSV exception
+  200 0000004C         ;
+  201 0000004C         ; Note(s) : 1) This function triggers a PendSV exception
                         (essentially, causes a context switch) to cause
-  200 0000004C         ;              the first task to start.
-  201 0000004C         ;
-  202 0000004C         ;           2) During task execution, PSP is used as the
+  202 0000004C         ;              the first task to start.
+  203 0000004C         ;
+  204 0000004C         ;           2) During task execution, PSP is used as the
                         stack pointer.
-  203 0000004C         ;              When an exception occurs, the core will s
+  205 0000004C         ;              When an exception occurs, the core will s
                        witch to MSP until the exception return.
-  204 0000004C         ;
-  205 0000004C         ;           3) OSStartHighRdy() MUST:
-  206 0000004C         ;              a) Setup PendSV exception priority to low
+  206 0000004C         ;
+  207 0000004C         ;           3) OSStartHighRdy() MUST:
+  208 0000004C         ;              a) Setup PendSV exception priority to low
                        est;
-  207 0000004C         ;              b) Set initial PSP to 0, to tell context 
+  209 0000004C         ;              b) Set initial PSP to 0, to tell context 
                        switcher this is first run;
-  208 0000004C         ;              c) Set the main stack to OS_CPU_ExceptStk
-                       Base
 
 
 
 ARM Macro Assembler    Page 6 
 
 
-  209 0000004C         ;              d) Set OSRunning to TRUE;
-  210 0000004C         ;              e) Get current high priority, OSPrioCur =
+  210 0000004C         ;              c) Set the main stack to OS_CPU_ExceptStk
+                       Base
+  211 0000004C         ;              d) Set OSRunning to TRUE;
+  212 0000004C         ;              e) Get current high priority, OSPrioCur =
                         OSPrioHighRdy;
-  211 0000004C         ;              f) Get current ready thread TCB, OSTCBCur
+  213 0000004C         ;              f) Get current ready thread TCB, OSTCBCur
                         = OSTCBHighRdy;
-  212 0000004C         ;              g) Get new process SP from TCB, SP = OSTC
+  214 0000004C         ;              g) Get new process SP from TCB, SP = OSTC
                        BHighRdy->OSTCBStkPtr;
-  213 0000004C         ;              h) Restore R0-R11 and R14 from new proces
+  215 0000004C         ;              h) Restore R0-R11 and R14 from new proces
                        s stack;
-  214 0000004C         ;              i) Enable interrupts (tasks will run with
+  216 0000004C         ;              i) Enable interrupts (tasks will run with
                         interrupts enabled).
-  215 0000004C         ;*******************************************************
+  217 0000004C         ;*******************************************************
                        *************************************************
-  216 0000004C         
-  217 0000004C         OSStartHighRdy
-  218 0000004C B672            CPSID            I           ; Prevent interrupt
+  218 0000004C         
+  219 0000004C         OSStartHighRdy
+  220 0000004C B672            CPSID            I           ; Prevent interrupt
                                                             ion during context 
                                                             switch
-  219 0000004E 4833            LDR              R0, =NVIC_SYSPRI14 ; Set the Pe
+  221 0000004E 4835            LDR              R0, =NVIC_SYSPRI14 ; Set the Pe
                                                             ndSV exception prio
                                                             rity
-  220 00000050 F04F 01FF       LDR              R1, =NVIC_PENDSV_PRI
-  221 00000054 7001            STRB             R1, [R0]
-  222 00000056         
-  223 00000056 2000            MOVS             R0, #0      ; Set the PSP to 0 
+  222 00000050 F04F 01FF       LDR              R1, =NVIC_PENDSV_PRI
+  223 00000054 7001            STRB             R1, [R0]
+  224 00000056         
+  225 00000056 2000            MOVS             R0, #0      ; Set the PSP to 0 
                                                             for initial context
                                                              switch call
-  224 00000058 F380 8809       MSR              PSP, R0
-  225 0000005C         
-  226 0000005C 4830            LDR              R0, =OS_CPU_ExceptStkBase ; Ini
+  226 00000058 F380 8809       MSR              PSP, R0
+  227 0000005C         
+  228 0000005C 4832            LDR              R0, =OS_CPU_ExceptStkBase ; Ini
                                                             tialize the MSP to 
                                                             the OS_CPU_ExceptSt
                                                             kBase
-  227 0000005E 6801            LDR              R1, [R0]
-  228 00000060 F381 8808       MSR              MSP, R1
-  229 00000064         
-  230 00000064 F7FF FFFE       BL               OSTaskSwHook ; Call OSTaskSwHoo
+  229 0000005E 6801            LDR              R1, [R0]
+  230 00000060 F381 8808       MSR              MSP, R1
+  231 00000064         
+  232 00000064 F7FF FFFE       BL               OSTaskSwHook ; Call OSTaskSwHoo
                                                             k() for FPU Push & 
                                                             Pop
-  231 00000068         
-  232 00000068 482E            LDR              R0, =OSRunning 
+  233 00000068         
+  234 00000068 4830            LDR              R0, =OSRunning 
                                                             ; OSRunning = TRUE
-  233 0000006A 2101            MOVS             R1, #1
-  234 0000006C 7001            STRB             R1, [R0]
-  235 0000006E         
-  236 0000006E 482E            LDR              R0, =OSPrioCur ; OSPrioCur = OS
+  235 0000006A 2101            MOVS             R1, #1
+  236 0000006C 7001            STRB             R1, [R0]
+  237 0000006E         
+  238 0000006E 4830            LDR              R0, =OSPrioCur ; OSPrioCur = OS
                                                             PrioHighRdy;
-  237 00000070 492E            LDR              R1, =OSPrioHighRdy
-  238 00000072 780A            LDRB             R2, [R1]
-  239 00000074 7002            STRB             R2, [R0]
-  240 00000076         
-  241 00000076 4827            LDR              R0, =OSTCBCur ; OSTCBCur  = OST
+  239 00000070 4930            LDR              R1, =OSPrioHighRdy
+  240 00000072 780A            LDRB             R2, [R1]
+  241 00000074 7002            STRB             R2, [R0]
+  242 00000076         
+  243 00000076 4829            LDR              R0, =OSTCBCur ; OSTCBCur  = OST
                                                             CBHighRdy;
-  242 00000078 4927            LDR              R1, =OSTCBHighRdy
-  243 0000007A 680A            LDR              R2, [R1]
-  244 0000007C 6002            STR              R2, [R0]
-  245 0000007E         
-  246 0000007E 6810            LDR              R0, [R2]    ; R0 is new process
-                                                             SP; SP = OSTCBHigh
+  244 00000078 4929            LDR              R1, =OSTCBHighRdy
+  245 0000007A 680A            LDR              R2, [R1]
+  246 0000007C 6002            STR              R2, [R0]
+  247 0000007E         
 
 
 
 ARM Macro Assembler    Page 7 
 
 
+  248 0000007E 6810            LDR              R0, [R2]    ; R0 is new process
+                                                             SP; SP = OSTCBHigh
                                                             Rdy->OSTCBStkPtr;
-  247 00000080 F380 8809       MSR              PSP, R0     ; Load PSP with new
+  249 00000080 F380 8809       MSR              PSP, R0     ; Load PSP with new
                                                              process SP
-  248 00000084         
-  249 00000084 F3EF 8014       MRS              R0, CONTROL
-  250 00000088 F040 0002       ORR              R0, R0, #2
-  251 0000008C F380 8814       MSR              CONTROL, R0
-  252 00000090 F3BF 8F6F       ISB                          ; Sync instruction 
+  250 00000084         
+  251 00000084 F3EF 8014       MRS              R0, CONTROL
+  252 00000088 F040 0002       ORR              R0, R0, #2
+  253 0000008C F380 8814       MSR              CONTROL, R0
+  254 00000090 F3BF 8F6F       ISB                          ; Sync instruction 
                                                             stream
-  253 00000094         
-  254 00000094 E8BD 4FF0       LDMFD            SP!, {R4-R11, LR} ; Restore r4-
+  255 00000094         
+  256 00000094 E8BD 4FF0       LDMFD            SP!, {R4-R11, LR} ; Restore r4-
                                                             11, lr from new pro
                                                             cess stack
-  255 00000098 BC0F            LDMFD            SP!, {R0-R3} ; Restore r0, r3
-  256 0000009A E8BD 5000       LDMFD            SP!, {R12, LR} 
+  257 00000098 BC0F            LDMFD            SP!, {R0-R3} ; Restore r0, r3
+  258 0000009A E8BD 5000       LDMFD            SP!, {R12, LR} 
                                                             ; Load R12 and LR
-  257 0000009E BC06            LDMFD            SP!, {R1, R2} ; Load PC and dis
+  259 0000009E BC06            LDMFD            SP!, {R1, R2} ; Load PC and dis
                                                             card xPSR
-  258 000000A0 B662            CPSIE            I
-  259 000000A2 4708            BX               R1
-  260 000000A4         
-  261 000000A4         
-  262 000000A4         ;*******************************************************
+  260 000000A0 B662            CPSIE            I
+  261 000000A2 4708            BX               R1
+  262 000000A4         
+  263 000000A4         
+  264 000000A4         ;*******************************************************
                        *************************************************
-  263 000000A4         ;                       PERFORM A CONTEXT SWITCH (From t
+  265 000000A4         ;                       PERFORM A CONTEXT SWITCH (From t
                        ask level) - OSCtxSw()
-  264 000000A4         ;                   PERFORM A CONTEXT SWITCH (From inter
+  266 000000A4         ;                   PERFORM A CONTEXT SWITCH (From inter
                        rupt level) - OSIntCtxSw()
-  265 000000A4         ;
-  266 000000A4         ; Note(s) : 1) OSCtxSw() is called when OS wants to perf
+  267 000000A4         ;
+  268 000000A4         ; Note(s) : 1) OSCtxSw() is called when OS wants to perf
                        orm a task context switch.  This function
-  267 000000A4         ;              triggers the PendSV exception which is wh
+  269 000000A4         ;              triggers the PendSV exception which is wh
                        ere the real work is done.
-  268 000000A4         ;
-  269 000000A4         ;           2) OSIntCtxSw() is called by OSIntExit() whe
+  270 000000A4         ;
+  271 000000A4         ;           2) OSIntCtxSw() is called by OSIntExit() whe
                        n it determines a context switch is needed as
-  270 000000A4         ;              the result of an interrupt.  This functio
+  272 000000A4         ;              the result of an interrupt.  This functio
                        n simply triggers a PendSV exception which will
-  271 000000A4         ;              be handled when there are no more interru
+  273 000000A4         ;              be handled when there are no more interru
                        pts active and interrupts are enabled.
-  272 000000A4         ;*******************************************************
+  274 000000A4         ;*******************************************************
                        *************************************************
-  273 000000A4         
-  274 000000A4         OSCtxSw
-  275 000000A4         OSIntCtxSw
-  276 000000A4 4822            LDR              R0, =NVIC_INT_CTRL ; Trigger th
+  275 000000A4         
+  276 000000A4         OSCtxSw
+  277 000000A4         OSIntCtxSw
+  278 000000A4 4824            LDR              R0, =NVIC_INT_CTRL ; Trigger th
                                                             e PendSV exception 
                                                             (causes context swi
                                                             tch)
-  277 000000A6 F04F 5180       LDR              R1, =NVIC_PENDSVSET
-  278 000000AA 6001            STR              R1, [R0]
-  279 000000AC 4770            BX               LR
-  280 000000AE         
-  281 000000AE         
-  282 000000AE         ;*******************************************************
+  279 000000A6 F04F 5180       LDR              R1, =NVIC_PENDSVSET
+  280 000000AA 6001            STR              R1, [R0]
+  281 000000AC 4770            BX               LR
+  282 000000AE         
+  283 000000AE         
+  284 000000AE         ;*******************************************************
                        *************************************************
-  283 000000AE         ;                                       HANDLE PendSV EX
-                       CEPTION
-  284 000000AE         ;                                   void OS_CPU_PendSVHa
+  285 000000AE         ;                                       HANDLE PendSV EX
 
 
 
 ARM Macro Assembler    Page 8 
 
 
+                       CEPTION
+  286 000000AE         ;                                   void OS_CPU_PendSVHa
                        ndler(void)
-  285 000000AE         ;
-  286 000000AE         ; Note(s) : 1) PendSV is used to cause a context switch.
+  287 000000AE         ;
+  288 000000AE         ; Note(s) : 1) PendSV is used to cause a context switch.
                          This is a recommended method for performing
-  287 000000AE         ;              context switches with Cortex-M.  This is 
+  289 000000AE         ;              context switches with Cortex-M.  This is 
                        because the Cortex-M auto-saves half of the
-  288 000000AE         ;              processor context on any exception, and r
+  290 000000AE         ;              processor context on any exception, and r
                        estores same on return from exception.  So only
-  289 000000AE         ;              saving of R4-R11 & R14 is required and fi
+  291 000000AE         ;              saving of R4-R11 & R14 is required and fi
                        xing up the stack pointers. Using the PendSV exception
-  290 000000AE         ;              this way means that context saving and re
+  292 000000AE         ;              this way means that context saving and re
                        storing is identical whether it is initiated from
-  291 000000AE         ;              a thread or occurs due to an interrupt or
+  293 000000AE         ;              a thread or occurs due to an interrupt or
                         exception.
-  292 000000AE         ;
-  293 000000AE         ;           2) Pseudo-code is:
-  294 000000AE         ;              a) Get the process SP
-  295 000000AE         ;              b) Save remaining regs r4-r11 & r14 on pr
+  294 000000AE         ;
+  295 000000AE         ;           2) Pseudo-code is:
+  296 000000AE         ;              a) Get the process SP
+  297 000000AE         ;              b) Save remaining regs r4-r11 & r14 on pr
                        ocess stack;
-  296 000000AE         ;              c) Save the process SP in its TCB, OSTCBC
+  298 000000AE         ;              c) Save the process SP in its TCB, OSTCBC
                        ur->OSTCBStkPtr = SP;
-  297 000000AE         ;              d) Call OSTaskSwHook();
-  298 000000AE         ;              e) Get current high priority, OSPrioCur =
+  299 000000AE         ;              d) Call OSTaskSwHook();
+  300 000000AE         ;              e) Get current high priority, OSPrioCur =
                         OSPrioHighRdy;
-  299 000000AE         ;              f) Get current ready thread TCB, OSTCBCur
+  301 000000AE         ;              f) Get current ready thread TCB, OSTCBCur
                         = OSTCBHighRdy;
-  300 000000AE         ;              g) Get new process SP from TCB, SP = OSTC
+  302 000000AE         ;              g) Get new process SP from TCB, SP = OSTC
                        BHighRdy->OSTCBStkPtr;
-  301 000000AE         ;              h) Restore R4-R11 and R14 from new proces
+  303 000000AE         ;              h) Restore R4-R11 and R14 from new proces
                        s stack;
-  302 000000AE         ;              i) Perform exception return which will re
+  304 000000AE         ;              i) Perform exception return which will re
                        store remaining context.
-  303 000000AE         ;
-  304 000000AE         ;           3) On entry into PendSV handler:
-  305 000000AE         ;              a) The following have been saved on the p
+  305 000000AE         ;
+  306 000000AE         ;           3) On entry into PendSV handler:
+  307 000000AE         ;              a) The following have been saved on the p
                        rocess stack (by processor):
-  306 000000AE         ;                 xPSR, PC, LR, R12, R0-R3
-  307 000000AE         ;              b) Processor mode is switched to Handler 
+  308 000000AE         ;                 xPSR, PC, LR, R12, R0-R3
+  309 000000AE         ;              b) Processor mode is switched to Handler 
                        mode (from Thread mode)
-  308 000000AE         ;              c) Stack is Main stack (switched from Pro
+  310 000000AE         ;              c) Stack is Main stack (switched from Pro
                        cess stack)
-  309 000000AE         ;              d) OSTCBCur      points to the OS_TCB of 
+  311 000000AE         ;              d) OSTCBCur      points to the OS_TCB of 
                        the task to suspend
-  310 000000AE         ;                 OSTCBHighRdy  points to the OS_TCB of 
+  312 000000AE         ;                 OSTCBHighRdy  points to the OS_TCB of 
                        the task to resume
-  311 000000AE         ;
-  312 000000AE         ;           4) Since PendSV is set to lowest priority in
+  313 000000AE         ;
+  314 000000AE         ;           4) Since PendSV is set to lowest priority in
                         the system (by OSStartHighRdy() above), we
-  313 000000AE         ;              know that it will only be run when no oth
+  315 000000AE         ;              know that it will only be run when no oth
                        er exception or interrupt is active, and
-  314 000000AE         ;              therefore safe to assume that context bei
+  316 000000AE         ;              therefore safe to assume that context bei
                        ng switched out was using the process stack (PSP).
-  315 000000AE         ;
-  316 000000AE         ;           5) Increasing priority using a write to BASE
+  317 000000AE         ;
+  318 000000AE         ;           5) Increasing priority using a write to BASE
                        PRI does not take effect immediately.
-  317 000000AE         ;              (a) IMPLICATION  This erratum means that 
+  319 000000AE         ;              (a) IMPLICATION  This erratum means that 
                        the instruction after an MSR to boost BASEPRI
-  318 000000AE         ;                  might incorrectly be preempted by an 
-                       insufficient high priority exception.
 
 
 
 ARM Macro Assembler    Page 9 
 
 
-  319 000000AE         ;
-  320 000000AE         ;              (b) WORKAROUND  The MSR to boost BASEPRI 
-                       can be replaced by the following code sequence:
+  320 000000AE         ;                  might incorrectly be preempted by an 
+                       insufficient high priority exception.
   321 000000AE         ;
-  322 000000AE         ;                  CPSID i
-  323 000000AE         ;                  MSR to BASEPRI
-  324 000000AE         ;                  DSB
-  325 000000AE         ;                  ISB
-  326 000000AE         ;                  CPSIE i
-  327 000000AE         ;*******************************************************
+  322 000000AE         ;              (b) WORKAROUND  The MSR to boost BASEPRI 
+                       can be replaced by the following code sequence:
+  323 000000AE         ;
+  324 000000AE         ;                  CPSID i
+  325 000000AE         ;                  MSR to BASEPRI
+  326 000000AE         ;                  DSB
+  327 000000AE         ;                  ISB
+  328 000000AE         ;                  CPSIE i
+  329 000000AE         ;*******************************************************
                        *************************************************
-  328 000000AE         
-  329 000000AE         OS_CPU_PendSVHandler
-  330 000000AE B672            CPSID            I           ; Cortex-M7 errata 
+  330 000000AE         
+  331 000000AE         OS_CPU_PendSVHandler
+  332 000000AE B672            CPSID            I           ; Cortex-M7 errata 
                                                             notice. See Note #5
                                                             
-  331 000000B0 F240 0200 
+  333 000000B0 F240 0200 
               F2C0 0200        MOV32            R2, OS_KA_BASEPRI_Boundary ; Se
                                                             t BASEPRI priority 
                                                             level required for 
                                                             exception preemptio
                                                             n
-  332 000000B8 6811            LDR              R1, [R2]
-  333 000000BA F381 8811       MSR              BASEPRI, R1
-  334 000000BE F3BF 8F4F       DSB
-  335 000000C2 F3BF 8F6F       ISB
-  336 000000C6 B662            CPSIE            I
-  337 000000C8         
-  338 000000C8 F3EF 8009       MRS              R0, PSP     ; PSP is process st
+  334 000000B8 6811            LDR              R1, [R2]
+  335 000000BA F381 8811       MSR              BASEPRI, R1
+  336 000000BE F3BF 8F4F       DSB
+  337 000000C2 F3BF 8F6F       ISB
+  338 000000C6 B662            CPSIE            I
+  339 000000C8         
+  340 000000C8 F3EF 8009       MRS              R0, PSP     ; PSP is process st
                                                             ack pointer
-  339 000000CC E920 4FF0       STMFD            R0!, {R4-R11, R14} ; Save remai
+  341 000000CC E920 4FF0       STMFD            R0!, {R4-R11, R14} ; Save remai
                                                             ning regs r4-11, R1
                                                             4 on process stack
-  340 000000D0         
-  341 000000D0 4D10            LDR              R5, =OSTCBCur ; OSTCBCur->OSTCB
+  342 000000D0         
+  343 000000D0 4D12            LDR              R5, =OSTCBCur ; OSTCBCur->OSTCB
                                                             StkPtr = SP;
-  342 000000D2 6829            LDR              R1, [R5]
-  343 000000D4 6008            STR              R0, [R1]    ; R0 is SP of proce
+  344 000000D2 6829            LDR              R1, [R5]
+  345 000000D4 6008            STR              R0, [R1]    ; R0 is SP of proce
                                                             ss being switched o
                                                             ut
-  344 000000D6         
-  345 000000D6         ; At this point, entire context of process has been save
+  346 000000D6         
+  347 000000D6         ; At this point, entire context of process has been save
                        d
-  346 000000D6 4674            MOV              R4, LR      ; Save LR exc_retur
+  348 000000D6 4674            MOV              R4, LR      ; Save LR exc_retur
                                                             n value
-  347 000000D8 F7FF FFFE       BL               OSTaskSwHook ; Call OSTaskSwHoo
+  349 000000D8 F7FF FFFE       BL               OSTaskSwHook ; Call OSTaskSwHoo
                                                             k() for FPU Push & 
                                                             Pop
-  348 000000DC         
-  349 000000DC 4812            LDR              R0, =OSPrioCur ; OSPrioCur = OS
+  350 000000DC         
+  351 000000DC 4814            LDR              R0, =OSPrioCur ; OSPrioCur = OS
                                                             PrioHighRdy;
-  350 000000DE 4913            LDR              R1, =OSPrioHighRdy
-  351 000000E0 780A            LDRB             R2, [R1]
-  352 000000E2 7002            STRB             R2, [R0]
-  353 000000E4         
-  354 000000E4 490C            LDR              R1, =OSTCBHighRdy ; OSTCBCur  =
-                                                             OSTCBHighRdy;
-  355 000000E6 680A            LDR              R2, [R1]
-  356 000000E8 602A            STR              R2, [R5]
+  352 000000DE 4915            LDR              R1, =OSPrioHighRdy
+  353 000000E0 780A            LDRB             R2, [R1]
+  354 000000E2 7002            STRB             R2, [R0]
+  355 000000E4         
+  356 000000E4         ;SystemView ´úÂë
+  357 000000E4 490E            LDR              R1,=OSTCBHighRdy
 
 
 
 ARM Macro Assembler    Page 10 
 
 
-  357 000000EA         
-  358 000000EA F044 0E04       ORR              LR,  R4, #0x04 ; Ensure excepti
+  358 000000E6 680A            LDR              R2,[R1]
+  359 000000E8         ;STR R2,[R0]
+  360 000000E8         
+  361 000000E8 4610            MOV              R0,R2
+  362 000000EA F7FF FFFE       BL               SYSVIEW_TaskSwitchedIn
+  363 000000EE         ;´úÂë½áÊø
+  364 000000EE         
+  365 000000EE         
+  366 000000EE         
+  367 000000EE         
+  368 000000EE 490C            LDR              R1, =OSTCBHighRdy ; OSTCBCur  =
+                                                             OSTCBHighRdy;
+  369 000000F0 680A            LDR              R2, [R1]
+  370 000000F2 602A            STR              R2, [R5]
+  371 000000F4         
+  372 000000F4 F044 0E04       ORR              LR,  R4, #0x04 ; Ensure excepti
                                                             on return uses proc
                                                             ess stack
-  359 000000EE 6810            LDR              R0,  [R2]   ; R0 is new process
+  373 000000F8 6810            LDR              R0,  [R2]   ; R0 is new process
                                                              SP; SP = OSTCBHigh
                                                             Rdy->OSTCBStkPtr;
-  360 000000F0 E8B0 4FF0       LDMFD            R0!, {R4-R11, R14} ; Restore r4
+  374 000000FA E8B0 4FF0       LDMFD            R0!, {R4-R11, R14} ; Restore r4
                                                             -11, R14 from new p
                                                             rocess stack
-  361 000000F4 F380 8809       MSR              PSP, R0     ; Load PSP with new
+  375 000000FE F380 8809       MSR              PSP, R0     ; Load PSP with new
                                                              process SP
-  362 000000F8         
-  363 000000F8 F240 0200 
+  376 00000102         
+  377 00000102 F240 0200 
               F2C0 0200        MOV32            R2, #0      ; Restore BASEPRI p
                                                             riority level to 0
-  364 00000100 B672            CPSID            I
-  365 00000102 F382 8811       MSR              BASEPRI, R2
-  366 00000106 F3BF 8F4F       DSB
-  367 0000010A F3BF 8F6F       ISB
-  368 0000010E B662            CPSIE            I
-  369 00000110 4770            BX               LR          ; Exception return 
+  378 0000010A B672            CPSID            I
+  379 0000010C F382 8811       MSR              BASEPRI, R2
+  380 00000110 F3BF 8F4F       DSB
+  381 00000114 F3BF 8F6F       ISB
+  382 00000118 B662            CPSIE            I
+  383 0000011A 4770            BX               LR          ; Exception return 
                                                             will restore remain
                                                             ing context
-  370 00000112         
-  371 00000112 00 00           ALIGN                        ; Removes warning[A
+  384 0000011C         
+  385 0000011C                 ALIGN                        ; Removes warning[A
                                                             1581W]: added <no_p
                                                             adbytes> of padding
                                                              at <address>
-  372 00000114         
-  373 00000114                 END
+  386 0000011C         
+  387 0000011C                 END
               00000000 
               00000000 
               E000ED22 
@@ -630,9 +644,9 @@ ARM Macro Assembler    Page 10
               E000ED04 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
 interwork --depend=.\objects\os_cpu_a.d -o.\objects\os_cpu_a.o -IC:\ES\Keil\STM
-32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__EVAL
- SETA 1" --predefine="__UVISION_VERSION SETA 536" --predefine="STM32F401xE SETA
- 1" --list=.\listings\os_cpu_a.lst ucos\port\os_cpu_a.asm
+32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__UVIS
+ION_VERSION SETA 536" --predefine="STM32F401xE SETA 1" --list=.\listings\os_cpu
+_a.lst ucos\port\os_cpu_a.asm
 
 
 
@@ -643,7 +657,7 @@ Relocatable symbols
 
 Symbol: .text
    Definitions
-      At line 74 in file ucos\port\os_cpu_a.asm
+      At line 76 in file ucos\port\os_cpu_a.asm
    Uses
       None
 Comment: .text unused
@@ -651,7 +665,7 @@ OSCtxSw 000000A4
 
 Symbol: OSCtxSw
    Definitions
-      At line 274 in file ucos\port\os_cpu_a.asm
+      At line 276 in file ucos\port\os_cpu_a.asm
    Uses
       At line 50 in file ucos\port\os_cpu_a.asm
 Comment: OSCtxSw used once
@@ -659,7 +673,7 @@ OSIntCtxSw 000000A4
 
 Symbol: OSIntCtxSw
    Definitions
-      At line 275 in file ucos\port\os_cpu_a.asm
+      At line 277 in file ucos\port\os_cpu_a.asm
    Uses
       At line 51 in file ucos\port\os_cpu_a.asm
 Comment: OSIntCtxSw used once
@@ -667,7 +681,7 @@ OSStartHighRdy 0000004C
 
 Symbol: OSStartHighRdy
    Definitions
-      At line 217 in file ucos\port\os_cpu_a.asm
+      At line 219 in file ucos\port\os_cpu_a.asm
    Uses
       At line 47 in file ucos\port\os_cpu_a.asm
 Comment: OSStartHighRdy used once
@@ -675,25 +689,25 @@ OS_CPU_FP_Reg_Pop 00000012
 
 Symbol: OS_CPU_FP_Reg_Pop
    Definitions
-      At line 120 in file ucos\port\os_cpu_a.asm
+      At line 122 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 56 in file ucos\port\os_cpu_a.asm
+      At line 58 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_FP_Reg_Pop used once
 OS_CPU_FP_Reg_Push 00000000
 
 Symbol: OS_CPU_FP_Reg_Push
    Definitions
-      At line 93 in file ucos\port\os_cpu_a.asm
+      At line 95 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 55 in file ucos\port\os_cpu_a.asm
+      At line 57 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_FP_Reg_Push used once
 OS_CPU_FP_nosave 00000010
 
 Symbol: OS_CPU_FP_nosave
    Definitions
-      At line 101 in file ucos\port\os_cpu_a.asm
+      At line 103 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 95 in file ucos\port\os_cpu_a.asm
+      At line 97 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_FP_nosave used once
 OS_CPU_PendSVHandler 000000AE
 
@@ -705,7 +719,7 @@ ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Relocatable symbols
 
    Definitions
-      At line 329 in file ucos\port\os_cpu_a.asm
+      At line 331 in file ucos\port\os_cpu_a.asm
    Uses
       At line 52 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_PendSVHandler used once
@@ -713,7 +727,7 @@ OS_CPU_SR_Restore 0000003A
 
 Symbol: OS_CPU_SR_Restore
    Definitions
-      At line 186 in file ucos\port\os_cpu_a.asm
+      At line 188 in file ucos\port\os_cpu_a.asm
    Uses
       At line 49 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_SR_Restore used once
@@ -721,7 +735,7 @@ OS_CPU_SR_Save 0000001E
 
 Symbol: OS_CPU_SR_Save
    Definitions
-      At line 174 in file ucos\port\os_cpu_a.asm
+      At line 176 in file ucos\port\os_cpu_a.asm
    Uses
       At line 48 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_SR_Save used once
@@ -736,33 +750,33 @@ NVIC_INT_CTRL E000ED04
 
 Symbol: NVIC_INT_CTRL
    Definitions
-      At line 64 in file ucos\port\os_cpu_a.asm
+      At line 66 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 276 in file ucos\port\os_cpu_a.asm
+      At line 278 in file ucos\port\os_cpu_a.asm
 Comment: NVIC_INT_CTRL used once
 NVIC_PENDSVSET 10000000
 
 Symbol: NVIC_PENDSVSET
    Definitions
-      At line 67 in file ucos\port\os_cpu_a.asm
+      At line 69 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 277 in file ucos\port\os_cpu_a.asm
+      At line 279 in file ucos\port\os_cpu_a.asm
 Comment: NVIC_PENDSVSET used once
 NVIC_PENDSV_PRI 000000FF
 
 Symbol: NVIC_PENDSV_PRI
    Definitions
-      At line 66 in file ucos\port\os_cpu_a.asm
+      At line 68 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 220 in file ucos\port\os_cpu_a.asm
+      At line 222 in file ucos\port\os_cpu_a.asm
 Comment: NVIC_PENDSV_PRI used once
 NVIC_SYSPRI14 E000ED22
 
 Symbol: NVIC_SYSPRI14
    Definitions
-      At line 65 in file ucos\port\os_cpu_a.asm
+      At line 67 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 219 in file ucos\port\os_cpu_a.asm
+      At line 221 in file ucos\port\os_cpu_a.asm
 Comment: NVIC_SYSPRI14 used once
 4 symbols
 
@@ -785,8 +799,8 @@ Symbol: OSPrioCur
    Definitions
       At line 37 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 236 in file ucos\port\os_cpu_a.asm
-      At line 349 in file ucos\port\os_cpu_a.asm
+      At line 238 in file ucos\port\os_cpu_a.asm
+      At line 351 in file ucos\port\os_cpu_a.asm
 
 OSPrioHighRdy 00000000
 
@@ -794,8 +808,8 @@ Symbol: OSPrioHighRdy
    Definitions
       At line 38 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 237 in file ucos\port\os_cpu_a.asm
-      At line 350 in file ucos\port\os_cpu_a.asm
+      At line 239 in file ucos\port\os_cpu_a.asm
+      At line 352 in file ucos\port\os_cpu_a.asm
 
 OSRunning 00000000
 
@@ -803,7 +817,7 @@ Symbol: OSRunning
    Definitions
       At line 36 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 232 in file ucos\port\os_cpu_a.asm
+      At line 234 in file ucos\port\os_cpu_a.asm
 Comment: OSRunning used once
 OSTCBCur 00000000
 
@@ -811,9 +825,9 @@ Symbol: OSTCBCur
    Definitions
       At line 39 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 98 in file ucos\port\os_cpu_a.asm
-      At line 241 in file ucos\port\os_cpu_a.asm
-      At line 341 in file ucos\port\os_cpu_a.asm
+      At line 100 in file ucos\port\os_cpu_a.asm
+      At line 243 in file ucos\port\os_cpu_a.asm
+      At line 343 in file ucos\port\os_cpu_a.asm
 
 OSTCBHighRdy 00000000
 
@@ -821,24 +835,25 @@ Symbol: OSTCBHighRdy
    Definitions
       At line 40 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 122 in file ucos\port\os_cpu_a.asm
-      At line 242 in file ucos\port\os_cpu_a.asm
-      At line 354 in file ucos\port\os_cpu_a.asm
+      At line 124 in file ucos\port\os_cpu_a.asm
+      At line 244 in file ucos\port\os_cpu_a.asm
+      At line 357 in file ucos\port\os_cpu_a.asm
+      At line 368 in file ucos\port\os_cpu_a.asm
 
 OSTaskSwHook 00000000
 
 Symbol: OSTaskSwHook
    Definitions
-      At line 42 in file ucos\port\os_cpu_a.asm
 
 
 
 ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 External symbols
 
+      At line 42 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 230 in file ucos\port\os_cpu_a.asm
-      At line 347 in file ucos\port\os_cpu_a.asm
+      At line 232 in file ucos\port\os_cpu_a.asm
+      At line 349 in file ucos\port\os_cpu_a.asm
 
 OS_CPU_ExceptStkBase 00000000
 
@@ -846,7 +861,7 @@ Symbol: OS_CPU_ExceptStkBase
    Definitions
       At line 43 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 226 in file ucos\port\os_cpu_a.asm
+      At line 228 in file ucos\port\os_cpu_a.asm
 Comment: OS_CPU_ExceptStkBase used once
 OS_KA_BASEPRI_Boundary 00000000
 
@@ -854,7 +869,15 @@ Symbol: OS_KA_BASEPRI_Boundary
    Definitions
       At line 44 in file ucos\port\os_cpu_a.asm
    Uses
-      At line 331 in file ucos\port\os_cpu_a.asm
+      At line 333 in file ucos\port\os_cpu_a.asm
 Comment: OS_KA_BASEPRI_Boundary used once
-9 symbols
+SYSVIEW_TaskSwitchedIn 00000000
+
+Symbol: SYSVIEW_TaskSwitchedIn
+   Definitions
+      At line 54 in file ucos\port\os_cpu_a.asm
+   Uses
+      At line 362 in file ucos\port\os_cpu_a.asm
+Comment: SYSVIEW_TaskSwitchedIn used once
+10 symbols
 359 symbols in table

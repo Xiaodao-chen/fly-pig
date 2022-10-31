@@ -7,3 +7,11 @@
 .\objects\app_hooks.o: .\BSP\include\os_cfg.h
 .\objects\app_hooks.o: .\ucos\port\os_cpu.h
 .\objects\app_hooks.o: .\ucos\source\os_trace.h
+.\objects\app_hooks.o: .\Sysemview\Sample\uCOS-II\os_trace_events.h
+.\objects\app_hooks.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW.h
+.\objects\app_hooks.o: .\Sysemview\SEGGER\SEGGER.h
+.\objects\app_hooks.o: .\Sysemview\Config\Global.h
+.\objects\app_hooks.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW_ConfDefaults.h
+.\objects\app_hooks.o: .\Sysemview\Config\SEGGER_SYSVIEW_Conf.h
+.\objects\app_hooks.o: .\Sysemview\Config\SEGGER_RTT_Conf.h
+.\objects\app_hooks.o: .\ucos\source\ucos_ii.h

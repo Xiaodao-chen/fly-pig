@@ -97,6 +97,7 @@ extern  "C" {                                    /* See Note #1.                
 #define  OS_CPU_ARM_FP_EN              0u
 #endif
 
+
 #ifndef CPU_CFG_KA_IPL_BOUNDARY
 #error  "CPU_CFG_KA_IPL_BOUNDARY        not #define'd in 'app_cfg.h'    "   /* See Note # 1 & 2        */
 #else
@@ -158,6 +159,7 @@ typedef unsigned int   OS_CPU_SR;                /* Define size of CPU status re
 */
 
 #define  OS_CRITICAL_METHOD   3u
+
 
 #if OS_CRITICAL_METHOD == 3u
                                                  /* Save current BASEPRI priority lvl for exception... */

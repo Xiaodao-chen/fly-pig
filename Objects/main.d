@@ -68,3 +68,17 @@
 .\objects\main.o: .\BSP\include\os_cfg.h
 .\objects\main.o: .\ucos\port\os_cpu.h
 .\objects\main.o: .\ucos\source\os_trace.h
+.\objects\main.o: .\Sysemview\Sample\uCOS-II\os_trace_events.h
+.\objects\main.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW.h
+.\objects\main.o: .\Sysemview\SEGGER\SEGGER.h
+.\objects\main.o: .\Sysemview\Config\Global.h
+.\objects\main.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW_ConfDefaults.h
+.\objects\main.o: .\Sysemview\Config\SEGGER_SYSVIEW_Conf.h
+.\objects\main.o: .\Sysemview\Config\SEGGER_RTT_Conf.h
+.\objects\main.o: .\ucos\source\ucos_ii.h
+.\objects\main.o: USER\ANO.h
+.\objects\main.o: USER\altitude.h
+.\objects\main.o: .\PID\PID.h
+.\objects\main.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\main.o: .\BSP\include\bsp_dma.h
+.\objects\main.o: .\f401\CMSIS\stm32f4xx.h

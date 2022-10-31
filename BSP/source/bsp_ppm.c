@@ -1,6 +1,6 @@
 #include "bsp_ppm.h"
 #include "ucos_ii.h"
-int TIM1_DataBuf[9]={0};	
+short TIM1_DataBuf[9]={0};	
 char a[50]={'0'};
 char b[50]={'0'};
 char c[50]={'0'};
@@ -10,7 +10,9 @@ char f[50]={'0'};
 char g[50]={'0'};
 char h[50]={'0'};
 char i[50]={'0'};
-int T1=0,T2=0,T3=0,T4=0;
+unsigned int T1=0,T2=0,T3=0,T4=0;
+
+short CH_OUT[4]={1000};
 
 
 
@@ -26,12 +28,20 @@ void TIM1_CC_IRQHandler(void){
 	static int status=0;
 	static int time_num[9]={0};
 	int num=0;
+	/*
+		status 等于0 表示还没有找到第一个信道的位置，即此时是在寻找第一个信道的位置
+	*/
 	if(status==0){
+		/*
+			in_num==0 表示现在是开始阶段，还是获取阶段，将CNT的值给0
+		*/
 		if(in_num==0){
 				TIM1->CNT=0X00;
 				in_num=1;
+				TIM1->CCER|=(1<<13);//修改为捕捉下降沿
 			}else{
 				num=TIM_GetCapture4(TIM1);
+				TIM1->CCER&=~(1<<13);//修改为捕捉上升沿
 				in_num=0;
 		}
 		if(num>1000){
@@ -42,8 +52,10 @@ void TIM1_CC_IRQHandler(void){
 			if(time_num[in_num]==0){
 				TIM1->CNT=0X00;
 				time_num[in_num]=1;
+				TIM1->CCER|=(1<<13);//修改为捕捉下降沿
 			}else{
 				TIM1_DataBuf[in_num]=TIM_GetCapture4(TIM1);
+				TIM1->CCER&=~(1<<13);//修改为捕捉上升沿
 				time_num[in_num]=0;
 				in_num++;
 			}
@@ -60,18 +72,18 @@ void Show_PPM(void){
 	sprintf(b,"the 2 is %d",TIM1_DataBuf[1]);
 	sprintf(c,"the 3 is %d",TIM1_DataBuf[2]);
 	sprintf(d,"the 4 is %d",TIM1_DataBuf[3]);
-//	sprintf(e,"the 5 is %d",TIM1_DataBuf[4]);
-//	sprintf(f,"the 6 is %d",TIM1_DataBuf[5]);
-//	sprintf(g,"the 7 is %d",TIM1_DataBuf[6]);
-//	sprintf(h,"the 8 is %d",TIM1_DataBuf[7]);
-	OLED_ShowStr(0,7,a);
-	OLED_ShowStr(0,0,b);
-	OLED_ShowStr(0,1,c);
-	OLED_ShowStr(0,2,d);
-//	OLED_ShowStr(0,3,e);
-//	OLED_ShowStr(0,4,f);
-//	OLED_ShowStr(0,5,g);
-//	OLED_ShowStr(0,6,h);
+ 	sprintf(e,"the 5 is %d",TIM1_DataBuf[4]);
+	sprintf(f,"the 6 is %d",TIM1_DataBuf[5]);
+	sprintf(g,"the 7 is %d",TIM1_DataBuf[6]);
+	sprintf(h,"the 8 is %d",TIM1_DataBuf[7]);
+	OLED_ShowStr(0,7,a,1);
+	OLED_ShowStr(0,0,b,1);
+	OLED_ShowStr(0,1,c,1);
+	OLED_ShowStr(0,2,d,1);
+	OLED_ShowStr(0,3,e,1);
+	OLED_ShowStr(0,4,f,1);
+	OLED_ShowStr(0,5,g,1);
+	OLED_ShowStr(0,6,h,1);
 }
 
 /**
@@ -79,8 +91,9 @@ void Show_PPM(void){
 */
 
 void Fly_Start(void){
-	while(TIM1_DataBuf[0]>205||TIM1_DataBuf[1]>205||TIM1_DataBuf[2]>205||TIM1_DataBuf[3]<395){
+	while(TIM1_DataBuf[4]<350){
 	}
+
 }
 
 
@@ -97,29 +110,21 @@ void Fly_Start(void){
 header 
 		|
 		|
-CH1   CH3
+CH3   CH1
 	\___/
 	/		\
-CH2   CH4
+CH4   CH2
 
 buf[0] 是左右方向
 buf[1] 是前后方向
 buf[2] 是油门方向
 buf[3] 是左旋转和右旋转方向
 
-*/
-void ChangeMotor(void){
+*/ 
 
-		// 左右方向          前后方向                油门大小             旋转方向  
-	T1=TIM1_DataBuf[0]-300+300-TIM1_DataBuf[1]+TIM1_DataBuf[2]+TIM1_DataBuf[3]-300;
-	T2=TIM1_DataBuf[0]-300+TIM1_DataBuf[1]-300+TIM1_DataBuf[2]+300-TIM1_DataBuf[3];
-	T3=300-TIM1_DataBuf[0]+300-TIM1_DataBuf[1]+TIM1_DataBuf[2]+300-TIM1_DataBuf[3];
-	T4=300-TIM1_DataBuf[0]+TIM1_DataBuf[1]-300+TIM1_DataBuf[2]+TIM1_DataBuf[3]-300;
-	TIM_SetCompare1(TIM3,ChangeToPWM(T1));
-	TIM_SetCompare2(TIM3,ChangeToPWM(T2));
-	TIM_SetCompare3(TIM3,ChangeToPWM(T3));
-	TIM_SetCompare4(TIM3,ChangeToPWM(T4));
-}
+
+
+
 
 
 int  ChangeToPWM(int num){
@@ -155,8 +160,6 @@ void PPM_Init(void){
 	TIM_SetCompare2(TIM3,1000);
 	TIM_SetCompare3(TIM3,1000);
 	TIM_SetCompare4(TIM3,1000);
-	
-	
 }
 
 

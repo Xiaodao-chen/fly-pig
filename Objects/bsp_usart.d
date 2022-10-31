@@ -41,3 +41,6 @@
 .\objects\bsp_usart.o: .\f401\FWLIB\misc.h
 .\objects\bsp_usart.o: .\f401\CMSIS\stm32f4xx.h
 .\objects\bsp_usart.o: C:\ES\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\bsp_usart.o: .\PID\PID.h
+.\objects\bsp_usart.o: .\f401\CMSIS\stm32f4xx.h
+.\objects\bsp_usart.o: C:\ES\ARM\ARMCC\Bin\..\include\string.h

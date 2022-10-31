@@ -15,17 +15,21 @@
 #define USART6_TX  GPIO_Pin_6
 #define USART6_RX  GPIO_Pin_7
 
+extern char PID[50];
+extern char flag;
+
 
 
 void Usart_SendByte(USART_TypeDef* USARTX,uint8_t data);
 void USART1_CONFIG(void);
 void NVIC_CONFIG(void);
-void Usart_SendStr(USART_TypeDef* USARTX,char* ch);
+void Usart_SendStr(USART_TypeDef* USARTX,char* ch,uint8_t size);
 void NVIC_usart6_open(void);
 void NVIC_usart6_close(void);
 void Debug_USART_Config(void);
 void USART6_CONFIG(void);
 void I2C_Addr_Detect(void);
+void Usart_SendStr1(USART_TypeDef* USARTX,char* ch);
 #endif
 
 

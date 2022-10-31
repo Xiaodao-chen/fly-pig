@@ -32,10 +32,15 @@ void Send_Str(u8 addr,char str1[]){
 
 
 
-void OLED_ShowStr(unsigned char x, unsigned char y, char ch[])
+void OLED_ShowStr(unsigned char x, unsigned char y, char ch[],uint8_t size)
 {
+	unsigned char* m=(unsigned char*)ch;
+	int line_1=0;
 	unsigned char c = 0,i = 0,j = 0,h=0;
-	while(ch[j] != '\0'){		
+	int length=0;
+	switch(size){
+		case 1:	
+		while(ch[j] != '\0'){		
 				c = ch[j] - 32;
 				if(x > 120)
 				{
@@ -46,11 +51,30 @@ void OLED_ShowStr(unsigned char x, unsigned char y, char ch[])
 				OLED_SetPos(x,y);
 				for(i=0;i<6;i++)
 					SEND_BYTE(0X40,F6x8[c][i]);
-				x += 6;
+				x+= 6;
 				j++;
 				h++;
 			}
+		case 2:
+						while(m[j] != '\0')
+			{
+				c = m[j] - 32;
+				if(length > 120)
+				{
+					length = 0;
+					line_1=(line_1+2)%8;
+					OLED_Up(2);
+					OLED_SetPos(0,line_1);
+				}
+			OLED_SetPos(length,line_1%8);
+			for(i=0;i<8;i++)
+				SEND_BYTE(0X40,F8X16[c*16+i+8]);
+				length += 8;
+				j++;
+			}
+		}
 }
+ 
 
 
 void OLED_Scroll(int START,int END,int DIRECTION){
@@ -119,14 +143,10 @@ void OLED_Init(void)
 	Send_Str(0x00,a);
 	OLED_ON();
 	OLED_Up(0);
-	OLED_SetPos(0, 7);
+	OLED_SetPos(0, 8);
 	OLED_Fill(0x00);
 }
 
-void OLED_Str(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize){
-	char a[100];
-	Send_Str(0x40,a);
-}
 
 
 void OLED_PRINT( char ch[],int size){

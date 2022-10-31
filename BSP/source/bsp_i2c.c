@@ -153,41 +153,41 @@ void I2C_Receive(I2C_TypeDef* i2c,uint8_t Address, uint8_t Register, uint8_t *Re
 
 
 // f103 complite
-void MY_I2C_Receive(I2C_TypeDef* i2c,uint8_t Address, uint8_t Register, uint8_t *ReceiveBuff, uint8_t size){
-    //Wait for Bus Idle
-    while(i2c->SR2 & I2C_SR2_BUSY);
-    //Write Register
-    i2c->CR1 |= I2C_CR1_START;
-    while(!(i2c->SR1 & I2C_SR1_SB));
-    i2c->DR = Address & ~1;
-    while(!(i2c->SR1 & I2C_SR1_ADDR));
-    i2c->SR2;
-    i2c->DR = Register;
-    while(!(i2c->SR1 & I2C_SR1_TXE));
-		//Read Data
-    i2c->CR1 |= I2C_CR1_START;
-    while(!(i2c->SR1 & I2C_SR1_SB));
-    i2c->DR = Address | 1;
-    while(!(i2c->SR1 & I2C_SR1_ADDR));
-    i2c->SR2; //清除ADDR位， ADDR位置1 表示地址已发送
-    i2c->CR1 |= I2C_CR1_ACK;//返回应答
+//void MY_I2C_Receive(I2C_TypeDef* i2c,uint8_t Address, uint8_t Register, uint8_t *ReceiveBuff, uint8_t size){
+//    //Wait for Bus Idle
+//    while(i2c->SR2 & I2C_SR2_BUSY);
+//    //Write Register
+//    i2c->CR1 |= I2C_CR1_START;
+//    while(!(i2c->SR1 & I2C_SR1_SB));
+//    i2c->DR = Address & ~1;
+//    while(!(i2c->SR1 & I2C_SR1_ADDR));
+//    i2c->SR2;
+//    i2c->DR = Register;
+//    while(!(i2c->SR1 & I2C_SR1_TXE));
+//		//Read Data
+//    i2c->CR1 |= I2C_CR1_START;
+//    while(!(i2c->SR1 & I2C_SR1_SB));
+//    i2c->DR = Address | 1;
+//    while(!(i2c->SR1 & I2C_SR1_ADDR));
+//    i2c->SR2; //清除ADDR位， ADDR位置1 表示地址已发送
+//    i2c->CR1 |= I2C_CR1_ACK;//返回应答
 
-    while(size > 3){
-        while(!(i2c->SR1 & I2C_SR1_RXNE));
-        *ReceiveBuff = i2c->DR;
-        ReceiveBuff++;
-        size--;
-    }
-    while(!(i2c->SR1 & I2C_SR1_BTF));
-    i2c->CR1 &= ~I2C_CR1_ACK;
-    *ReceiveBuff = i2c->DR;
-    ReceiveBuff++;
-    while(!(i2c->SR1 & I2C_SR1_BTF));
-    i2c->CR1 |= I2C_CR1_STOP;
-		*ReceiveBuff = i2c->DR;
-    ReceiveBuff++;
-    *ReceiveBuff = i2c->DR;
-}
+//    while(size > 3){
+//        while(!(i2c->SR1 & I2C_SR1_RXNE));
+//        *ReceiveBuff = i2c->DR;
+//        ReceiveBuff++;
+//        size--;
+//    }
+//    while(!(i2c->SR1 & I2C_SR1_BTF));
+//    i2c->CR1 &= ~I2C_CR1_ACK;
+//    *ReceiveBuff = i2c->DR;
+//    ReceiveBuff++;
+//    while(!(i2c->SR1 & I2C_SR1_BTF));
+//    i2c->CR1 |= I2C_CR1_STOP;
+//		*ReceiveBuff = i2c->DR;
+//    ReceiveBuff++;
+//    *ReceiveBuff = i2c->DR;
+//}
 
 
 

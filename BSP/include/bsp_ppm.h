@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include "bsp_tim.h"
 
+extern unsigned int T1,T2,T3,T4;
 extern TIM_OCInitTypeDef CH1,CH2,CH3,CH4; //这是声明，在编译的时候找不到没有关系，但是在链接的时候去其他的源文件寻找
-extern int TIM1_DataBuf[9];
+extern short TIM1_DataBuf[9];
 /*
 	需要修改输出的PWM的值 函数
 */

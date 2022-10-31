@@ -27,9 +27,13 @@ TIM3 的CH1,CH2,CH3,CH4 分别是 PA6,PA7,PB0,PB1
 
 void TIM_Delay(int ti);
 void TIM1_CONFIG(void);
+void TIM2_CONFIG(void);
 void TIM3_CONFIG(void);
 void TIM4_CONFIG(void);
-void GET_TIME(void);
+float GY86_GETTIME(void);
+float PID_GETTIME(void);
+void TIM5_CONFIG(void);
+
 void TIMDelay(uint32_t Times);
 #endif 
 

@@ -1,5 +1,9 @@
 #include "bsp_usart.h"
-
+#include "PID.h"
+#include <string.h>
+#include "PID.h"
+char PID[50]={0};
+char flag=0;
 
 
 void USART1_CONFIG(void){
@@ -35,7 +39,7 @@ void USART1_CONFIG(void){
 	NVIC_InitTypeDef nvic;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 	nvic.NVIC_IRQChannel=USART1_IRQn;
-	nvic.NVIC_IRQChannelPreemptionPriority=2;
+	nvic.NVIC_IRQChannelPreemptionPriority=1;
 	nvic.NVIC_IRQChannelSubPriority=2;
 	nvic.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&nvic);
@@ -74,21 +78,19 @@ void USART6_CONFIG(void){
 	USART.USART_StopBits=USART_StopBits_1;
 	USART.USART_WordLength=USART_WordLength_8b;
 	USART_Init(USART6,&USART);
-	//开启接受中断和空闲中断
-	//USART_ITConfig(USART6,USART_IT_IDLE,ENABLE);
-	//当 接受数据的寄存器不等于0 时
+	//开启接受中断和空闲中断 和 传输完毕中断
+	
 	USART_ITConfig(USART6,USART_IT_RXNE,ENABLE);
 	USART_ITConfig(USART6,USART_IT_IDLE,ENABLE);
-//	NVIC_usart6_open();
-//	USART_Cmd(USART6,ENABLE);
+	
+	USART_ITConfig(USART1,USART_IT_TC,DISABLE);
 	NVIC_InitTypeDef nvic;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 	nvic.NVIC_IRQChannel=USART6_IRQn;
 	nvic.NVIC_IRQChannelPreemptionPriority=2;
-	nvic.NVIC_IRQChannelSubPriority=2;
+	nvic.NVIC_IRQChannelSubPriority=1;
 	nvic.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&nvic);
-	//使能串口
 	USART_Cmd(USART6,ENABLE);
 }
 
@@ -107,7 +109,7 @@ void NVIC_usart6_close(void){
 	NVIC_InitTypeDef nvic;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	nvic.NVIC_IRQChannel=USART6_IRQn;
-	nvic.NVIC_IRQChannelPreemptionPriority=1;
+	nvic.NVIC_IRQChannelPreemptionPriority=2;
 	nvic.NVIC_IRQChannelSubPriority=2;
 	nvic.NVIC_IRQChannelCmd=DISABLE;
 	NVIC_Init(&nvic);
@@ -122,12 +124,23 @@ void Usart_SendByte(USART_TypeDef* USARTX,uint8_t data){
 
 
 
-void Usart_SendStr(USART_TypeDef* USARTX,char* ch){
+void Usart_SendStr(USART_TypeDef* USARTX,char* ch,uint8_t length){
 	u8 i=0;
-	do{
+	while(length!=0){
 		Usart_SendByte(USARTX,*(ch+i));
 		i++;
-	}while(*(ch+i)!='\0');
+		length--;
+	}
+	while(USART_GetFlagStatus(USARTX,USART_FLAG_TC)==RESET);
+}
+
+
+void Usart_SendStr1(USART_TypeDef* USARTX,char* ch){
+	u8 i=0;
+	while(ch[i]!='\0'){
+		Usart_SendByte(USARTX,*(ch+i));
+		i++;
+	}
 	while(USART_GetFlagStatus(USARTX,USART_FLAG_TC)==RESET);
 }
 
@@ -143,6 +156,34 @@ int fputc(int ch, FILE *f)
 		return (ch);
 }
 
+
+//static void change(float* a,char b,char c){
+//	*a=b*1.0f;
+//	while(c!=0){
+//		(*a)=(*a)/10;
+//		c--;
+//	}
+//}
+
+// 将USART_IRQHandler 数据接收
+
+	void USART6_IRQHandler(){
+		static int i=0;
+
+		if(USART_GetITStatus(USART6,USART_IT_RXNE)!=RESET){
+			PID[i]=USART_ReceiveData(USART6);
+			i++;
+		}else if(USART_GetITStatus(USART6,USART_IT_IDLE)!=RESET){
+			//表示接受完毕
+			USART6->SR;
+			USART6->DR;
+			if(i<10){
+				flag=1;
+			}
+			i=0;
+			
+		}
+}
 
 
 

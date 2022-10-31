@@ -128,9 +128,9 @@ void HEIGHT_SHOW(){
 	sprintf(d1,"Dist is %d",hight);
 	sprintf(e1,"Strength is %d",strength);
 	sprintf(f1,"Temp is %d",temp);
-	OLED_ShowStr(0,4,d1);
-	OLED_ShowStr(0,5,e1);
-	OLED_ShowStr(0,6,f1);
+	OLED_ShowStr(0,4,d1,1);
+	OLED_ShowStr(0,5,e1,1);
+	OLED_ShowStr(0,6,f1,1);
 		
 }
 

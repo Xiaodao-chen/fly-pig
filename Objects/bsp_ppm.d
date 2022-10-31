@@ -55,3 +55,11 @@
 .\objects\bsp_ppm.o: .\BSP\include\os_cfg.h
 .\objects\bsp_ppm.o: .\ucos\port\os_cpu.h
 .\objects\bsp_ppm.o: .\ucos\source\os_trace.h
+.\objects\bsp_ppm.o: .\Sysemview\Sample\uCOS-II\os_trace_events.h
+.\objects\bsp_ppm.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW.h
+.\objects\bsp_ppm.o: .\Sysemview\SEGGER\SEGGER.h
+.\objects\bsp_ppm.o: .\Sysemview\Config\Global.h
+.\objects\bsp_ppm.o: .\Sysemview\SEGGER\SEGGER_SYSVIEW_ConfDefaults.h
+.\objects\bsp_ppm.o: .\Sysemview\Config\SEGGER_SYSVIEW_Conf.h
+.\objects\bsp_ppm.o: .\Sysemview\Config\SEGGER_RTT_Conf.h
+.\objects\bsp_ppm.o: .\ucos\source\ucos_ii.h

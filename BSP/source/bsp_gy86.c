@@ -4,11 +4,16 @@
 #include <string.h>
 #include "ucos_ii.h"
 #include "bsp_tim.h"
+#include "bsp_tim.h"
+#include "bsp_usart.h"
 uint8_t ch[14]={0};
 uint8_t buffer[14]={0};
-uint8_t mpu_init[14]={0x6B,0x80,0x6B,0x01,0x6A,0x00,0x37,0x02};
 float axo=0,ayo=0,azo=0,gxo=0,gyo=0,gzo=0;//偏移量
-extern Angle_t angle;
+short mxo=241 ,myo=-317 ,mzo= -75;
+
+//int mxo=0 ,myo=0 ,mzo= 0;
+
+
 char show0[14]={0};
 char show1[14]={0};
 char show2[14]={0};
@@ -31,16 +36,36 @@ hmc_Struct hmc;
 //所以接下来应该换一个方式进行配置，想一想问题在哪
 
 
-
+void Buttons_CONFIG(void){
+	GPIO_InitTypeDef gpio_struct;
+		//开启时钟；
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
+	gpio_struct.GPIO_Pin=GPIO_Pin_13;
+	gpio_struct.GPIO_Speed=GPIO_Speed_100MHz;  
+	gpio_struct.GPIO_Mode=GPIO_Mode_IN ;
+	gpio_struct.GPIO_PuPd=GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOC,&gpio_struct);
+}
 
 void MPU_Init(void){	
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X6B,0x80);
 	TIMDelay(10);
-	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0x6B,0x01);
+	//I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0x6B,0x01);
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X6A,0X00);
+	//关闭主模式
 	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X37,0x02);
-	//量程±250°/s，±2g/s2
-	I2C_Send_Str(HMC_I2C,MPU6050_ADDRESS,0x19,(uint8_t*)"\x09\x1B\x00\x00",4);
+	//打开旁路模式
+	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0x6B,0x00);
+	//解除休眠状态，使用内部8MHZ振荡器
+	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0x19,0x09);
+	//采样时间 SampleRate= Gyroscope OutputRate /(1+SMPLRT_DIV) 1KHZ
+
+	//设置低通滤波
+	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0x1A,0x1B);
+	//量程±250°/s，
+	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X1B,0X00);
+	//±2g/s2
+	I2C_Send_Byte(HMC_I2C,MPU6050_ADDRESS,0X1C,0X00);
 }
 
 
@@ -84,10 +109,11 @@ void MPU_Get(void){
 }
 
 void HMC_Get(void){
+	//TIMDelay(10);
 	I2C_Receive(HMC_I2C,HMC5883_ADDRESS,0X03,buffer,6);
-	hmc.X=(short)(buffer[0]<<8)|buffer[1];
-	hmc.Y=(short)(buffer[4]<<8)|buffer[5];
-	hmc.Z=(short)(buffer[2]<<8)|buffer[3];
+	hmc.X=(short)((buffer[0]<<8)|buffer[1])-mxo;
+	hmc.Y=(short)((buffer[4]<<8)|buffer[5])-myo;
+	hmc.Z=(short)((buffer[2]<<8)|buffer[3])-mzo;
 	if (hmc.X > 0x7fff)
       hmc.X -= 0xffff;
     if (hmc.Y > 0x7fff)
@@ -100,36 +126,57 @@ AX 表示X轴的加速度
 GX 表示X角速度 Stores the most recent X axis gyroscope measurement. 存储X轴陀螺仪的测试结果 ，那存储的结果就是绕X轴的角速度
 */
 void MPU_Show(void){
-	sprintf(show0,"AX:%2.1f",(float)mpu.ACC_X);
-	sprintf(show1,"AY:%2.1f",(float)mpu.ACC_Y);
-	sprintf(show2,"AZ:%2.1f",(float)mpu.ACC_Z);
-	sprintf(show3,"GX:%2.1f",(float)mpu.GYR_X);
-	sprintf(show4,"GY:%2.1f",(float)mpu.GYR_Y);
-	sprintf(show5,"GZ:%2.1f",(float)mpu.GYR_Z);
-	OLED_ShowStr(0, 7, show0);
-	OLED_ShowStr(0, 0, show1);
-	OLED_ShowStr(0, 1, show2);
-	OLED_ShowStr(60, 7, show3);
-	OLED_ShowStr(60, 0, show4);
-	OLED_ShowStr(60, 1, show5);
+	sprintf(show0,"%2.3f",(float)mpu.ACC_X);
+	sprintf(show1,"%2.3f",(float)mpu.ACC_Y);
+	sprintf(show2,"%2.3f",(float)mpu.ACC_Z);
+	sprintf(show3,"%2.3f",(float)mpu.GYR_X);
+	sprintf(show4,"%2.3f",(float)mpu.GYR_Y);
+	sprintf(show5,"%2.3f",(float)mpu.GYR_Z);
+	OLED_ShowStr(20, 7, show0,1);
+	OLED_ShowStr(20, 0, show1,1);
+	OLED_ShowStr(20, 1, show2,1);
+	OLED_ShowStr(80, 7, show3,1);
+	OLED_ShowStr(80, 0, show4,1);
+	OLED_ShowStr(80, 1, show5,1);
 }
 
-
+void MPU_Show_Init(void){
+	sprintf(show0,"AX:");
+	sprintf(show1,"AY:");
+	sprintf(show2,"AZ:");
+	sprintf(show3,"GX:");
+	sprintf(show4,"GY:");
+	sprintf(show5,"GZ:");
+	OLED_ShowStr(0, 7, show0,1);
+	OLED_ShowStr(0, 0, show1,1);
+	OLED_ShowStr(0, 1, show2,1);
+	OLED_ShowStr(60, 7, show3,1);
+	OLED_ShowStr(60, 0, show4,1);
+	OLED_ShowStr(60, 1, show5,1);
+}
 
 void HMC_Show(void){
-	sprintf(show7,"MX:%2.1f",hmc.X);
-	sprintf(show8,"MY:%2.1f",hmc.Y);
-	sprintf(show9,"MZ:%2.1f",hmc.Z);
-	OLED_ShowStr(0, 3, show7);
-	OLED_ShowStr(0, 4, show8);
-	OLED_ShowStr(0, 5, show9);
+	sprintf(show7,"%2.2f",hmc.X);
+	sprintf(show8,"%2.2f",hmc.Y);
+	sprintf(show9,"%2.2f",hmc.Z);
+	OLED_ShowStr(20, 3, show7,1);
+	OLED_ShowStr(20, 4, show8,1);
+	OLED_ShowStr(20, 5, show9,1);
 }
 
+void HMC_Show_Init(void){
+	sprintf(show7,"MX:");
+	sprintf(show8,"MY:");
+	sprintf(show9,"MZ:");
+	OLED_ShowStr(0, 3, show7,1);
+	OLED_ShowStr(0, 4, show8,1);
+	OLED_ShowStr(0, 5, show9,1);
+}
 
 //取均值计算出水平状态下偏移量
-void GY86_offset(void){
+void GY86_offset(unsigned short times){
     float axt=0,ayt=0,azt=0,gxt=0,gyt=0,gzt=0;
-    for(int i = 0;i<100;i++){
+    for(int i = 0;i<times;i++){
         GY86_getdata();
         axt+=mpu_r.ACC_X;
         ayt+=mpu_r.ACC_Y;
@@ -138,25 +185,63 @@ void GY86_offset(void){
         gyt+=mpu_r.GYR_Y;
         gzt+=mpu_r.GYR_Z;
     }
-    axo = axt/100;
-    ayo = ayt/100;
-    azo = azt/100 - 16384;
-    gxo = gxt/100;
-    gyo = gyt/100;
-    gzo = gzt/100;
+    axo = axt/times;
+    ayo = ayt/times;
+    azo = azt/times -16384;
+    gxo = gxt/times;
+    gyo = gyt/times;
+    gzo = gzt/times;
 }
-extern OS_EVENT* MutexSemp;
-extern INT8U err;
+
+void HMC_offset(void){
+	float maxx=0,minx=0,maxy=0,miny=0,maxz=0,minz=0;
+	char send_buffer[50];
+	//sprintf(send_buffer,"maxx:%f,minx:%f,maxy:%f,miny:%f,maxz:%f,minz:%f\r\n",maxx,minx,maxy,miny,maxz,minz);
+	while(GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)!=RESET){
+			GY86_getdata();
+			if(mpu.ACC_Z>9.0f||mpu.ACC_Z<- 9.0f)//证明这是在水平面进行旋转
+			{
+				if(hmc.X>maxx){maxx=hmc.X;}
+				if(hmc.X<minx){minx=hmc.X;}
+				if(hmc.Y>maxy){maxy=hmc.Y;}
+				if(hmc.Y<miny){miny=hmc.Y;}
+				sprintf(send_buffer,"maxx:%f,minx:%f,maxy:%f,miny:%f,maxz:%f,minz:%f\r\n",maxx,minx,maxy,miny,maxz,minz);
+				Usart_SendStr1(USART6,send_buffer);
+			}else if(mpu.ACC_X>9.0f||mpu.ACC_X<-9.0f)//证明这是在竖直平面进行旋转，X朝下
+			{
+				if(hmc.Z>maxz){maxz=hmc.Z;}
+				if(hmc.Z<minz){minz=hmc.Z;}
+				if(hmc.Y>maxy){maxy=hmc.Y;}
+				if(hmc.Y<miny){miny=hmc.Y;}
+				sprintf(send_buffer,"maxx:%f,minx:%f,maxy:%f,miny:%f,maxz:%f,minz:%f\r\n",maxx,minx,maxy,miny,maxz,minz);
+				Usart_SendStr1(USART6,send_buffer);
+			}else if(mpu.ACC_Y>9.0f||mpu.ACC_Y<-9.0f){
+				if(hmc.Z>maxz){maxz=hmc.Z;}
+				if(hmc.Z<minz){minz=hmc.Z;}
+				if(hmc.X>maxx){maxx=hmc.X;}
+				if(hmc.X<minx){minx=hmc.X;}
+				sprintf(send_buffer,"maxx:%f,minx:%f,maxy:%f,miny:%f,maxz:%f,minz:%f\r\n",maxx,minx,maxy,miny,maxz,minz);
+				Usart_SendStr1(USART6,send_buffer);
+			}
+	}
+	mxo=(maxx+minx)/2;
+	myo=(maxx+minx)/2;
+	mzo=(maxx+minx)/2;
+	Usart_SendStr1(USART6,"finish sending\r\n");
+
+	
+}
+
 void GY86_getdata(void){
     MPU_Get();
 		//单位m/s2
     mpu.ACC_X = (mpu_r.ACC_X-axo)/ACCEL_2G;
     mpu.ACC_Y = (mpu_r.ACC_Y-ayo)/ACCEL_2G;
-    mpu.ACC_Z = (mpu_r.ACC_Z-azo)/ACCEL_2G;
+    mpu.ACC_Z = (mpu_r.ACC_Z-azo)/ACCEL_2G;//除以量程 正负2G 用16位数字表示
 		//单位°/s
-    mpu.GYR_X = (mpu_r.GYR_X-gxo)/GYRO_250DPS;
-    mpu.GYR_Y = (mpu_r.GYR_Y-gyo)/GYRO_250DPS;
-    mpu.GYR_Z = (mpu_r.GYR_Z-gzo)/GYRO_250DPS;
+    mpu.GYR_X = (mpu_r.GYR_X-gxo)/RAD_TO_ANGLE_250H;
+    mpu.GYR_Y = (mpu_r.GYR_Y-gyo)/RAD_TO_ANGLE_250H;
+    mpu.GYR_Z = (mpu_r.GYR_Z-gzo)/RAD_TO_ANGLE_250H;
     HMC_Get();//地磁数据未处理
    
 }
@@ -165,8 +250,7 @@ void angle_show(void){
 		sprintf(show10,"p:%2.1f",angle.pitch);
 		sprintf(show11,"r:%2.1f",angle.roll);
 		sprintf(show12,"y:%2.1f",angle.yaw);
-		OLED_ShowStr(60, 3, show10);
-		OLED_ShowStr(60, 4, show11);
-		OLED_ShowStr(60, 5, show12);
+		OLED_ShowStr(60, 3, show10,1);
+		OLED_ShowStr(60, 4, show11,1);
+		OLED_ShowStr(60, 5, show12,1);
 }
-

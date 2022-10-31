@@ -16,10 +16,8 @@ extern int m;
 */
 
 void esp8266_config(){
-	Usart_SendStr(USART6,  "AT+CWMODE=1\r\n");
+	Usart_SendStr(USART6,  "AT+CWMODE=1\r\n",sizeof( "AT+CWMODE=1\r\n"));
 }
-
-
 
 // 将USART_IRQHandler 数据接收
 //void USART6_IRQHandler(){
